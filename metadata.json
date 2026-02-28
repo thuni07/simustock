@@ -1,0 +1,5 @@
+{
+  "name": "Simustock",
+  "description": "Simustock - A sophisticated stock market simulation platform powered by Multi-Agent Systems (MAS) and Reinforcement Learning (RL) to model realistic market behavior and train investors.",
+  "requestFramePermissions": []
+}
