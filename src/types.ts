@@ -39,12 +39,15 @@ export interface UserProfile {
   id: string;
   username: string;
   email: string;
+  password?: string;
   userType: 'Novice' | 'Professional' | 'Institutional';
   balance: number;
   portfolio: { [symbol: string]: number };
   trades: Trade[];
   performanceFeedback?: string[];
   equityHistory: { time: string, value: number }[];
+  following?: string[]; // Array of user IDs
+  followers?: string[]; // Array of user IDs
 }
 
 export interface Trade {

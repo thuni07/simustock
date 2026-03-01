@@ -7,25 +7,31 @@
 
 @layer base {
   :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --border: #e2e8f0;
+    --accent: #f43f5e;
+    --accent-foreground: #ffffff;
   }
 
   .dark {
-    --bg-primary: #0A0A0B;
-    --bg-secondary: #0F0F12;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border-color: rgba(255, 255, 255, 0.05);
+    --background: #0A0A0B;
+    --foreground: #f8fafc;
+    --card: #0F0F12;
+    --card-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --border: rgba(255, 255, 255, 0.05);
+    --accent: #f43f5e;
+    --accent-foreground: #ffffff;
   }
 
   body {
-    @apply antialiased selection:bg-emerald-500/30 transition-colors duration-300;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    @apply antialiased selection:bg-rose-500/30 bg-[var(--background)] text-[var(--foreground)];
   }
 }
 
@@ -34,17 +40,18 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 dark:bg-white/10 rounded-full;
+  background: var(--border);
+  border-radius: 10px;
 }
 
 .markdown-body {
-  @apply text-slate-600 dark:text-slate-300 leading-relaxed text-sm;
+  @apply text-[var(--muted-foreground)] leading-relaxed text-sm;
 }
 
 .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-  @apply text-slate-900 dark:text-white font-bold mt-4 mb-2;
+  @apply text-[var(--foreground)] font-bold mt-4 mb-2;
 }

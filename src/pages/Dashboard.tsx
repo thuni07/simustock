@@ -37,216 +37,271 @@ export default function Dashboard({ user, setUser, market }: DashboardProps) {
   const { stocks, shocks, agents } = market;
 
   const marketIndexes = [
-    { name: 'Simustock 300', value: 3842.15, change: 1.25, color: 'emerald' },
-    { name: '智能体情绪', value: 68, change: 5.4, color: 'blue' },
-    { name: '恐慌指数', value: 18.2, change: -2.1, color: 'rose' },
+    { name: '上证指数', value: 3242.15, change: 1.25, points: '+40.12', color: 'rose' },
+    { name: '深证成指', value: 11042.85, change: 0.85, points: '+92.45', color: 'rose' },
+    { name: '创业板指', value: 2242.15, change: -0.45, points: '-10.12', color: 'emerald' },
   ];
 
+  const risingCount = stocks.filter((s: Stock) => s.changePercent > 0).length;
+  const fallingCount = stocks.filter((s: Stock) => s.changePercent < 0).length;
+  const neutralCount = stocks.length - risingCount - fallingCount;
+
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Market Indexes - Tonghuashun Style Top Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      {/* Market Indices - Professional Top Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {marketIndexes.map((index) => (
           <motion.div 
             key={index.name}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-3xl p-6 flex justify-between items-center group hover:border-emerald-500/20 dark:hover:border-white/10 transition-all shadow-sm dark:shadow-none"
+            className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 flex flex-col hover:bg-[var(--muted)] transition-all cursor-pointer"
           >
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{index.name}</p>
-              <h3 className="text-3xl font-mono font-bold text-slate-900 dark:text-white tracking-tighter">{index.value.toLocaleString()}</h3>
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-sm font-bold text-[var(--muted-foreground)]">{index.name}</span>
+              <div className={cn(
+                "text-xs font-bold px-2 py-0.5 rounded",
+                index.change >= 0 ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"
+              )}>
+                {index.change >= 0 ? '+' : ''}{index.change}%
+              </div>
             </div>
-            <div className={cn(
-              "text-right px-3 py-1 rounded-lg font-bold text-sm",
-              index.change >= 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
-            )}>
-              {index.change >= 0 ? '+' : ''}{index.change}%
+            <div className="flex items-baseline gap-3">
+              <h3 className={cn(
+                "text-2xl font-mono font-bold tracking-tighter",
+                index.change >= 0 ? "text-rose-500" : "text-emerald-500"
+              )}>
+                {index.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </h3>
+              <span className={cn(
+                "text-sm font-mono font-bold",
+                index.change >= 0 ? "text-rose-500" : "text-emerald-500"
+              )}>
+                {index.points}
+              </span>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Chart Area */}
-        <div className="lg:col-span-2 space-y-8">
-          <section className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-sm dark:shadow-none">
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">大盘看板</h3>
-                  <p className="text-xs text-slate-500">实时模拟市场波动与智能体博弈</p>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column - Market Heat & Main Chart */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Market Heat Indicator */}
+          <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
+                <Flame className="w-4 h-4 text-orange-500" /> 市场温度
+              </h3>
+              <div className="flex items-center gap-4 text-[10px] font-bold">
+                <span className="text-rose-500">上涨 {risingCount}</span>
+                <span className="text-[var(--muted-foreground)]">平盘 {neutralCount}</span>
+                <span className="text-emerald-500">下跌 {fallingCount}</span>
               </div>
-              <div className="flex gap-2">
-                {['1H', '1D', '1W', '1M'].map(t => (
-                  <button key={t} className="px-3 py-1 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">{t}</button>
+            </div>
+            <div className="flex h-2 w-full rounded-full overflow-hidden bg-white/5">
+              <div className="bg-rose-500 transition-all duration-1000" style={{ width: `${(risingCount / stocks.length) * 100}%` }} />
+              <div className="bg-slate-700 transition-all duration-1000" style={{ width: `${(neutralCount / stocks.length) * 100}%` }} />
+              <div className="bg-emerald-500 transition-all duration-1000" style={{ width: `${(fallingCount / stocks.length) * 100}%` }} />
+            </div>
+            <div className="mt-4 flex justify-between items-center">
+              <p className="text-xs text-slate-500 italic">当前市场情绪：<span className="text-white font-bold">活跃</span></p>
+              <div className="flex gap-1">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className={cn(
+                    "w-1 h-3 rounded-full",
+                    i < 7 ? "bg-orange-500" : "bg-white/10"
+                  )} />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Main Chart */}
+          <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <Activity className="w-5 h-5 text-rose-400" />
+                <h3 className="text-lg font-bold text-[var(--foreground)]">分时走势</h3>
+              </div>
+              <div className="flex bg-[var(--muted)] p-1 rounded-xl">
+                {['分时', '5日', '日K', '周K'].map(t => (
+                  <button key={t} className={cn(
+                    "px-3 py-1 rounded-lg text-[10px] font-bold transition-all",
+                    t === '分时' ? "bg-rose-500 text-white shadow-lg" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                  )}>{t}</button>
                 ))}
               </div>
             </div>
 
-            <div className="h-[350px] w-full">
+            <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stocks[0].history}>
                   <defs>
                     <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-white/5" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
                   <XAxis dataKey="time" hide />
-                  <YAxis domain={['auto', 'auto']} hide />
+                  <YAxis domain={['auto', 'auto']} orientation="right" tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#10b981' }}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }}
+                    itemStyle={{ color: '#f43f5e' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="price" 
-                    stroke="#10b981" 
+                    stroke="#f43f5e" 
                     fillOpacity={1} 
                     fill="url(#colorPrice)" 
-                    strokeWidth={3}
-                    animationDuration={1500}
+                    strokeWidth={2}
+                    animationDuration={1000}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </section>
 
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-sm dark:shadow-none">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-orange-500" /> 热门个股
-                </h3>
-                <NavLink to="/market" className="text-xs text-slate-500 hover:text-emerald-500 transition-colors">查看全部</NavLink>
+          {/* Sector & Hot Stocks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+              <h3 className="text-sm font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-rose-500" /> 领涨板块
+              </h3>
+              <div className="space-y-3">
+                {[
+                  { name: '人工智能', change: '+3.45%', leader: 'TECH' },
+                  { name: '半导体', change: '+2.82%', leader: 'CHIP' },
+                  { name: '生物医药', change: '+1.95%', leader: 'BIO' },
+                  { name: '新能源车', change: '+1.54%', leader: 'EV' },
+                ].map((sector) => (
+                  <div key={sector.name} className="flex justify-between items-center p-3 bg-[var(--muted)] rounded-xl hover:bg-[var(--border)] transition-all cursor-pointer">
+                    <div>
+                      <p className="text-xs font-bold text-[var(--foreground)]">{sector.name}</p>
+                      <p className="text-[10px] text-[var(--muted-foreground)]">领涨股: {sector.leader}</p>
+                    </div>
+                    <span className="text-sm font-mono font-bold text-rose-500">{sector.change}</span>
+                  </div>
+                ))}
               </div>
-              <div className="space-y-4">
+            </section>
+
+            <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+              <h3 className="text-sm font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-amber-500" /> 热门个股
+              </h3>
+              <div className="space-y-3">
                 {stocks.slice(0, 4).map((stock: Stock) => (
-                  <div key={stock.symbol} className="flex justify-between items-center group cursor-pointer">
+                  <div key={stock.symbol} className="flex justify-between items-center p-3 bg-[var(--muted)] rounded-xl hover:bg-[var(--border)] transition-all cursor-pointer">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center font-bold text-xs text-slate-400 group-hover:text-emerald-500 transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-[var(--muted)] flex items-center justify-center font-bold text-xs text-[var(--muted-foreground)]">
                         {stock.symbol[0]}
                       </div>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-500 transition-colors">{stock.symbol}</span>
+                      <div>
+                        <p className="text-xs font-bold text-[var(--foreground)]">{stock.symbol}</p>
+                        <p className="text-[10px] text-[var(--muted-foreground)]">{stock.name}</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-mono text-slate-900 dark:text-white">${stock.price.toFixed(2)}</p>
+                      <p className="text-xs font-mono font-bold text-[var(--foreground)]">${stock.price.toFixed(2)}</p>
                       <p className={cn(
                         "text-[10px] font-bold",
-                        stock.change >= 0 ? "text-emerald-500" : "text-rose-400"
+                        stock.changePercent >= 0 ? "text-rose-500" : "text-emerald-500"
                       )}>
-                        {stock.changePercent.toFixed(2)}%
+                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-sm dark:shadow-none">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-blue-500" /> 市场冲击
-                </h3>
-                <NavLink to="/lab" className="text-xs text-slate-500 hover:text-blue-400 transition-colors">进入实验室</NavLink>
-              </div>
-              <div className="space-y-4">
-                {shocks.slice(0, 3).map((shock: any) => (
-                  <div key={shock.id} className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5 hover:border-emerald-500/20 dark:hover:border-white/10 transition-all">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{shock.type}</span>
-                      <span className="text-[10px] text-slate-500">{new Date(shock.timestamp).toLocaleTimeString()}</span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-1">{shock.description}</p>
-                  </div>
-                ))}
-                {shocks.length === 0 && (
-                  <p className="text-xs text-slate-500 italic text-center py-8">当前市场运行平稳，无重大冲击事件</p>
-                )}
-              </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
 
-        {/* Sidebar Widgets */}
-        <div className="space-y-8">
-          <section className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-[2.5rem] p-8">
+        {/* Right Column - Account & News */}
+        <div className="lg:col-span-4 space-y-6">
+          <section className="bg-gradient-to-br from-rose-600 to-orange-700 rounded-3xl p-6 shadow-xl shadow-rose-500/20">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
                 <Wallet className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">我的账户</p>
+                <p className="text-[10px] font-bold text-rose-200 uppercase tracking-widest">我的总资产</p>
                 <h3 className="text-2xl font-mono font-bold text-white">${user.balance.toLocaleString()}</h3>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 bg-white/5 rounded-2xl">
-                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">今日盈亏</p>
-                <p className="text-sm font-bold text-emerald-400">+$1,240</p>
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-rose-200">今日盈亏</span>
+                <span className="text-white font-bold">+$1,240.50 (+1.2%)</span>
               </div>
-              <div className="p-4 bg-white/5 rounded-2xl">
-                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">持仓市值</p>
-                <p className="text-sm font-bold text-white">$42,850</p>
+              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-white w-2/3" />
               </div>
             </div>
             <NavLink 
               to="/trade" 
-              className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 group"
+              className="w-full py-3 bg-white text-rose-600 font-bold rounded-xl transition-all hover:bg-rose-50 flex items-center justify-center gap-2"
             >
-              立即交易 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              去交易 <ChevronRight className="w-4 h-4" />
             </NavLink>
           </section>
 
-          <section className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-sm dark:shadow-none">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <PieChart className="w-5 h-5 text-purple-500" /> 智能体动态
-              </h3>
+          <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+            <h3 className="text-sm font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-500" /> 7x24 快讯
+            </h3>
+            <div className="space-y-6 relative before:absolute before:left-1 before:top-2 before:bottom-2 before:w-px before:bg-[var(--border)]">
+              {[
+                { time: '10:24', text: 'Simustock 300 指数早盘拉升，人工智能板块领涨。', type: '行情' },
+                { time: '10:15', text: '某机构智能体触发大额买入指令，市场情绪回暖。', type: '异动' },
+                { time: '09:50', text: '政策智能体发布最新指引，鼓励长期价值投资。', type: '政策' },
+              ].map((news, i) => (
+                <div key={i} className="relative pl-6">
+                  <div className="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/40" />
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-mono text-[var(--muted-foreground)]">{news.time}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded font-bold">{news.type}</span>
+                  </div>
+                  <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{news.text}</p>
+                </div>
+              ))}
             </div>
+            <button className="w-full mt-6 py-2 text-[10px] font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">查看更多快讯</button>
+          </section>
+
+          <section className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6">
+            <h3 className="text-sm font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-purple-500" /> 智能体情绪分布
+            </h3>
             <div className="space-y-4">
               {agents.map((agent: any) => (
-                <div key={agent.id} className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-2 h-2 rounded-full",
-                      agent.sentiment > 0 ? "bg-emerald-500" : "bg-rose-500"
-                    )} />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{agent.type}</span>
+                <div key={agent.id} className="space-y-1.5">
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-[var(--muted-foreground)] font-bold uppercase tracking-wider">{agent.type}</span>
+                    <span className={cn(
+                      "font-mono font-bold",
+                      agent.sentiment > 0 ? "text-rose-500" : "text-emerald-500"
+                    )}>
+                      {agent.sentiment > 0 ? '看多' : '看空'} {(Math.abs(agent.sentiment) * 100).toFixed(0)}%
+                    </span>
                   </div>
-                  <span className={cn(
-                    "text-xs font-bold",
-                    agent.sentiment > 0 ? "text-emerald-500" : "text-rose-500"
-                  )}>
-                    {(agent.sentiment * 100).toFixed(0)}%
-                  </span>
+                  <div className="h-1.5 w-full bg-[var(--muted)] rounded-full overflow-hidden flex">
+                    <div 
+                      className={cn("h-full transition-all duration-1000", agent.sentiment > 0 ? "bg-rose-500" : "bg-emerald-500")} 
+                      style={{ width: `${(Math.abs(agent.sentiment) * 100)}%` }} 
+                    />
+                  </div>
                 </div>
               ))}
             </div>
           </section>
-
-          <div className="bg-amber-500/5 border border-amber-500/10 rounded-[2rem] p-8 relative overflow-hidden group cursor-pointer">
-            <div className="absolute top-0 right-0 p-4">
-              <TrendingUp className="w-5 h-5 text-amber-500/30 group-hover:text-amber-500 transition-colors" />
-            </div>
-            <h4 className="font-bold text-slate-900 dark:text-white mb-2">新手训练营</h4>
-            <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-              亏损后想学习？参加互动训练营，提升您的策略对抗能力。
-            </p>
-            <NavLink to="/education" className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1">
-              立即参加 <ChevronRight className="w-3 h-3" />
-            </NavLink>
-          </div>
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <MarketAnalyst 
           market={{ 
             ...market, 

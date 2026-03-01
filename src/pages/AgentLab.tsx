@@ -83,14 +83,14 @@ export default function AgentLab({ market }: AgentLabProps) {
   ];
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">智能体实验室</h2>
-          <p className="text-slate-500">基于多智能体系统 (MAS) 与强化学习 (RL) 的金融沙盒</p>
+          <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight">智能体实验室</h2>
+          <p className="text-[var(--muted-foreground)]">基于多智能体系统 (MAS) 与强化学习 (RL) 的金融沙盒</p>
         </div>
         
-        <nav className="flex bg-slate-100 dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 p-1 rounded-2xl">
+        <nav className="flex bg-[var(--muted)] border border-[var(--border)] p-1 rounded-2xl">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -98,8 +98,8 @@ export default function AgentLab({ market }: AgentLabProps) {
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all",
                 activeTab === tab.id 
-                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
-                  : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20" 
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               )}
             >
               <tab.icon className="w-4 h-4" />
@@ -197,10 +197,10 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       {/* Parameters Panel */}
-      <div className="lg:col-span-1 space-y-6 bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
+      <div className="lg:col-span-1 space-y-6 bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
         <div className="flex items-center gap-3 mb-4">
-          <Settings2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white">模拟参数配置</h3>
+          <Settings2 className="w-5 h-5 text-rose-400" />
+          <h3 className="text-xl font-bold text-white">模拟参数配置</h3>
         </div>
 
         <div className="space-y-6">
@@ -233,7 +233,7 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
         <button 
           onClick={runSimulation}
           disabled={isSimulating}
-          className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-500/50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+          className="w-full bg-rose-500 hover:bg-rose-400 disabled:bg-rose-500/50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-rose-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           {isSimulating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
           {isSimulating ? '模拟运行中...' : '开始模拟'}
@@ -242,12 +242,12 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
 
       {/* Results Panel */}
       <div className="lg:col-span-2 space-y-8">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 min-h-[400px] shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 min-h-[400px]">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">价格走势模拟 (K线/分时)</h3>
+            <h3 className="text-xl font-bold text-white">价格走势模拟 (K线/分时)</h3>
             <div className="flex gap-2">
-              <button className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400"><Save className="w-4 h-4" /></button>
-              <button className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400"><Share2 className="w-4 h-4" /></button>
+              <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400"><Save className="w-4 h-4" /></button>
+              <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400"><Share2 className="w-4 h-4" /></button>
             </div>
           </div>
 
@@ -257,8 +257,8 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
                 <AreaChart data={results}>
                   <defs>
                     <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
@@ -266,9 +266,9 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
                   <YAxis domain={['auto', 'auto']} hide />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#0F0F12', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#10b981' }}
+                    itemStyle={{ color: '#f43f5e' }}
                   />
-                  <Area type="monotone" dataKey="price" stroke="#10b981" fillOpacity={1} fill="url(#colorPrice)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="price" stroke="#f43f5e" fillOpacity={1} fill="url(#colorPrice)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -281,21 +281,21 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <MetricCard label="指数涨跌幅" value="-4.2%" color="text-rose-400" />
-          <MetricCard label="最大回撤" value="8.15%" color="text-rose-400" />
+          <MetricCard label="指数涨跌幅" value="-4.2%" color="text-emerald-400" />
+          <MetricCard label="最大回撤" value="8.15%" color="text-emerald-400" />
           <MetricCard label="恐慌峰值" value="T+14" color="text-amber-400" />
-          <MetricCard label="羊群爆发点" value="T+18" color="text-emerald-400" />
+          <MetricCard label="羊群爆发点" value="T+18" color="text-rose-400" />
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">情绪演化热图</h3>
-          <div className="h-24 bg-gradient-to-r from-rose-500 via-amber-500 to-emerald-500 rounded-2xl relative overflow-hidden">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">情绪演化热图</h3>
+          <div className="h-24 bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 rounded-2xl relative overflow-hidden">
              <motion.div 
               animate={{ x: ['0%', '100%', '0%'] }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
               className="absolute inset-y-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] z-10"
              />
-             <div className="absolute inset-0 flex items-center justify-around text-[10px] font-bold text-white/80 dark:text-white/50 uppercase tracking-widest">
+             <div className="absolute inset-0 flex items-center justify-around text-[10px] font-bold text-white/50 uppercase tracking-widest">
                 <span>Panic</span>
                 <span>Neutral</span>
                 <span>Greed</span>
@@ -326,44 +326,44 @@ function StrategyModule() {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Code className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> 策略构建器
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Code className="w-5 h-5 text-rose-400" /> 策略构建器
             </h3>
-            <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
+            <div className="flex bg-white/5 p-1 rounded-xl">
               <button 
                 onClick={() => setMode('simple')}
-                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'simple' ? "bg-emerald-500 text-white" : "text-slate-500")}
+                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'simple' ? "bg-rose-500 text-white" : "text-slate-500")}
               >简易模式</button>
               <button 
                 onClick={() => setMode('code')}
-                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'code' ? "bg-emerald-500 text-white" : "text-slate-500")}
+                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'code' ? "bg-rose-500 text-white" : "text-slate-500")}
               >代码模式</button>
             </div>
           </div>
 
           {mode === 'simple' ? (
             <div className="space-y-4">
-              <div className="p-6 bg-slate-50 dark:bg-white/5 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl">
+              <div className="p-6 bg-white/5 border border-dashed border-white/10 rounded-2xl">
                 <p className="text-xs font-bold text-slate-500 uppercase mb-4">买入条件 (Buy Conditions)</p>
                 <div className="flex flex-wrap gap-3">
-                  <StrategyBlock label="恐慌指数 > 70" color="bg-rose-500/20 text-rose-600 dark:text-rose-400" />
-                  <StrategyBlock label="买入 10% 仓位" color="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" />
-                  <button className="w-8 h-8 rounded-lg border border-dashed border-slate-300 dark:border-white/20 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-white/40">+</button>
+                  <StrategyBlock label="恐慌指数 > 70" color="bg-emerald-500/20 text-emerald-400" />
+                  <StrategyBlock label="买入 10% 仓位" color="bg-rose-500/20 text-rose-400" />
+                  <button className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center text-slate-500 hover:text-white hover:border-white/40">+</button>
                 </div>
               </div>
-              <div className="p-6 bg-slate-50 dark:bg-white/5 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl">
+              <div className="p-6 bg-white/5 border border-dashed border-white/10 rounded-2xl">
                 <p className="text-xs font-bold text-slate-500 uppercase mb-4">卖出条件 (Sell Conditions)</p>
                 <div className="flex flex-wrap gap-3">
-                  <StrategyBlock label="收益率达到 15%" color="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" />
-                  <StrategyBlock label="止盈卖出" color="bg-amber-500/20 text-amber-600 dark:text-amber-400" />
-                  <button className="w-8 h-8 rounded-lg border border-dashed border-slate-300 dark:border-white/20 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-white/40">+</button>
+                  <StrategyBlock label="收益率达到 15%" color="bg-rose-500/20 text-rose-400" />
+                  <StrategyBlock label="止盈卖出" color="bg-amber-500/20 text-amber-400" />
+                  <button className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center text-slate-500 hover:text-white hover:border-white/40">+</button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-slate-900 dark:bg-black/40 rounded-2xl p-6 font-mono text-sm text-emerald-400/80 min-h-[200px]">
+            <div className="bg-black/40 rounded-2xl p-6 font-mono text-sm text-rose-400/80 min-h-[200px]">
               <p><span className="text-purple-400">if</span> market.panic_index &gt; <span className="text-amber-400">70</span>:</p>
               <p className="ml-4">portfolio.buy(stock=<span className="text-amber-400">'000001'</span>, amount=<span className="text-amber-400">0.1</span>)</p>
               <p><span className="text-purple-400">if</span> portfolio.profit &gt; <span className="text-amber-400">0.15</span>:</p>
@@ -371,14 +371,14 @@ function StrategyModule() {
               <motion.div 
                 animate={{ opacity: [0, 1] }} 
                 transition={{ duration: 0.8, repeat: Infinity }}
-                className="inline-block w-2 h-4 bg-emerald-500 ml-1"
+                className="inline-block w-2 h-4 bg-rose-500 ml-1"
               />
             </div>
           )}
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">收益率对比 (用户 vs 智能体)</h3>
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">收益率对比 (用户 vs 智能体)</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={Array.from({ length: 20 }).map((_, i) => ({
@@ -390,7 +390,7 @@ function StrategyModule() {
                 <XAxis dataKey="name" hide />
                 <YAxis hide />
                 <Tooltip contentStyle={{ backgroundColor: '#0F0F12', border: 'none', borderRadius: '12px' }} />
-                <Line type="monotone" dataKey="user" stroke="#10b981" strokeWidth={3} dot={false} name="用户策略" />
+                <Line type="monotone" dataKey="user" stroke="#f43f5e" strokeWidth={3} dot={false} name="用户策略" />
                 <Line type="monotone" dataKey="agent" stroke="#6366f1" strokeWidth={3} dot={false} name="智能体策略" />
               </LineChart>
             </ResponsiveContainer>
@@ -399,8 +399,8 @@ function StrategyModule() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">选择对抗对手</h3>
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">选择对抗对手</h3>
           <div className="space-y-4">
             {opponents.map((op) => (
               <button 
@@ -408,14 +408,14 @@ function StrategyModule() {
                 onClick={() => setOpponent(op.id)}
                 className={cn(
                   "w-full p-4 rounded-2xl border text-left transition-all group",
-                  opponent === op.id ? "bg-emerald-500/10 border-emerald-500/50" : "bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 dark:hover:border-white/10"
+                  opponent === op.id ? "bg-rose-500/10 border-rose-500/50" : "bg-white/5 border-transparent hover:border-white/10"
                 )}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className={cn("font-bold", opponent === op.id ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-white")}>{op.name}</span>
+                  <span className={cn("font-bold", opponent === op.id ? "text-rose-400" : "text-white")}>{op.name}</span>
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full", i < op.difficulty ? "bg-amber-400" : "bg-slate-200 dark:bg-white/10")} />
+                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full", i < op.difficulty ? "bg-amber-400" : "bg-white/10")} />
                     ))}
                   </div>
                 </div>
@@ -423,18 +423,18 @@ function StrategyModule() {
               </button>
             ))}
           </div>
-          <button className="w-full mt-8 bg-slate-900 dark:bg-white text-white dark:text-black font-bold py-4 rounded-2xl hover:bg-slate-800 dark:hover:bg-slate-200 transition-all active:scale-95">
+          <button className="w-full mt-8 bg-white text-black font-bold py-4 rounded-2xl hover:bg-slate-200 transition-all active:scale-95">
             开始对抗 PK
           </button>
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">行为分析报告</h3>
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">行为分析报告</h3>
           <div className="space-y-4">
             <AnalysisItem label="胜率" value="65%" />
             <AnalysisItem label="盈亏比" value="1.82" />
             <AnalysisItem label="最大回撤" value="12.4%" />
-            <div className="pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="pt-4 border-t border-white/5">
               <p className="text-xs text-slate-500 italic">
                 “你在 T+12 时刻表现出了明显的恐慌抛售倾向，而智能体在该点位选择了逆向买入。”
               </p>
@@ -467,18 +467,18 @@ function VisualizationModule({ agents }: { agents: any[] }) {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[3rem] p-8 relative overflow-hidden min-h-[500px] shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[3rem] p-8 relative overflow-hidden min-h-[500px]">
           <div className="absolute top-8 left-8 z-10">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> 智能体广场
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Users className="w-5 h-5 text-rose-400" /> 智能体广场
             </h3>
             <p className="text-xs text-slate-500">实时可视化群体情绪演化</p>
           </div>
 
           <div className="absolute top-8 right-8 z-10 flex gap-2">
-            <div className="flex items-center gap-4 bg-white/80 dark:bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-200 dark:border-white/5">
-              <LegendItem color="bg-rose-500" label="恐慌抛售" />
-              <LegendItem color="bg-emerald-500" label="贪婪买入" />
+            <div className="flex items-center gap-4 bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+              <LegendItem color="bg-emerald-500" label="恐慌抛售" />
+              <LegendItem color="bg-rose-500" label="贪婪买入" />
               <LegendItem color="bg-blue-500" label="观望中" />
             </div>
           </div>
@@ -503,8 +503,8 @@ function VisualizationModule({ agents }: { agents: any[] }) {
                 transition={{ duration: 2 + Math.random() * 3, repeat: Infinity }}
                 className={cn(
                   "absolute rounded-full cursor-pointer hover:ring-4 hover:ring-white/20 transition-all",
-                  dot.type === 'panic' ? "bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]" : 
-                  dot.type === 'greedy' ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" : 
+                  dot.type === 'panic' ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" : 
+                  dot.type === 'greedy' ? "bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]" : 
                   "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]"
                 )}
                 style={{ 
@@ -518,19 +518,19 @@ function VisualizationModule({ agents }: { agents: any[] }) {
           </div>
 
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-6 bg-black/60 backdrop-blur-xl px-8 py-4 rounded-3xl border border-white/10">
-            <button onClick={() => setIsPlaying(!isPlaying)} className="text-white hover:text-emerald-400 transition-colors">
+            <button onClick={() => setIsPlaying(!isPlaying)} className="text-white hover:text-rose-400 transition-colors">
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
             </button>
             <div className="w-64 h-1 bg-white/10 rounded-full relative">
-              <div className="absolute inset-y-0 left-0 w-1/3 bg-emerald-500 rounded-full" />
+              <div className="absolute inset-y-0 left-0 w-1/3 bg-rose-500 rounded-full" />
               <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg" />
             </div>
             <span className="text-[10px] font-mono text-slate-400">T+18 / T+30</span>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">群体行为回放</h3>
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">群体行为回放</h3>
           <div className="space-y-4">
             <TimelineItem time="T+5" event="政策发布：利好信号注入" type="positive" />
             <TimelineItem time="T+12" event="情绪拐点：机构开始获利了结" type="neutral" />
@@ -540,20 +540,20 @@ function VisualizationModule({ agents }: { agents: any[] }) {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 min-h-[400px] shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 min-h-[400px]">
           <div className="flex items-center gap-3 mb-8">
-            <Search className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">单个智能体探针</h3>
+            <Search className="w-5 h-5 text-rose-400" />
+            <h3 className="text-xl font-bold text-white">单个智能体探针</h3>
           </div>
 
           {selectedAgent ? (
             <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+              <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
+                <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
                   #{selectedAgent.id}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedAgent.type}智能体</p>
+                  <p className="text-sm font-bold text-white">{selectedAgent.type}智能体</p>
                   <p className="text-xs text-slate-500">ID: agent_v3_{selectedAgent.id}</p>
                 </div>
               </div>
@@ -565,9 +565,9 @@ function VisualizationModule({ agents }: { agents: any[] }) {
                 <ProbeStat label="最近操作" value={selectedAgent.lastAction} />
               </div>
 
-              <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                 <p className="text-xs font-bold text-slate-500 uppercase mb-2">决策逻辑 (Decision Logic)</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-400 leading-relaxed">
                   检测到周围 3 个邻近智能体正在进行抛售操作，且市场恐慌指数超过阈值 (0.65)，触发羊群效应模块，执行减仓指令。
                 </p>
               </div>
@@ -583,7 +583,7 @@ function VisualizationModule({ agents }: { agents: any[] }) {
                   ]}>
                     <PolarGrid stroke="#ffffff10" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 10 }} />
-                    <Radar name="Agent" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.5} />
+                    <Radar name="Agent" dataKey="A" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.5} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -596,8 +596,8 @@ function VisualizationModule({ agents }: { agents: any[] }) {
           )}
         </div>
 
-        <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-[2rem] p-8">
-          <h4 className="text-emerald-400 font-bold mb-2">什么是情绪传染？</h4>
+        <div className="bg-rose-500/5 border border-rose-500/10 rounded-[2rem] p-8">
+          <h4 className="text-rose-400 font-bold mb-2">什么是情绪传染？</h4>
           <p className="text-xs text-slate-400 leading-relaxed">
             在 Simustock 中，智能体不仅受价格影响，还会观察邻近智能体的行为。当一定比例的邻居表现出恐慌时，该情绪会通过网络拓扑结构快速扩散，形成非理性的群体波动。
           </p>
@@ -624,15 +624,15 @@ function TrainingModule() {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Activity className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> 训练实时可视化
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Activity className="w-5 h-5 text-rose-400" /> 训练实时可视化
             </h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">Training...</span>
+                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-rose-400 uppercase">Training...</span>
               </div>
               <span className="text-[10px] font-mono text-slate-500">Epoch: 1,240 / 5,000</span>
             </div>
@@ -649,33 +649,33 @@ function TrainingModule() {
                 <XAxis dataKey="epoch" hide />
                 <YAxis hide />
                 <Tooltip contentStyle={{ backgroundColor: '#0F0F12', border: 'none', borderRadius: '12px' }} />
-                <Area type="monotone" dataKey="reward" stroke="#10b981" fill="#10b981" fillOpacity={0.1} strokeWidth={2} name="累计奖励 (Reward)" />
+                <Area type="monotone" dataKey="reward" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.1} strokeWidth={2} name="累计奖励 (Reward)" />
                 <Area type="monotone" dataKey="loss" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.1} strokeWidth={2} name="损失函数 (Loss)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-8">
-            <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl">
+            <div className="p-4 bg-white/5 rounded-2xl">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">策略收敛度</p>
               <div className="flex items-end gap-2">
-                <span className="text-xl font-bold text-slate-900 dark:text-white">92.4%</span>
-                <TrendingUp className="w-4 h-4 text-emerald-500 dark:text-emerald-400 mb-1" />
+                <span className="text-xl font-bold text-white">92.4%</span>
+                <TrendingUp className="w-4 h-4 text-rose-400 mb-1" />
               </div>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl">
+            <div className="p-4 bg-white/5 rounded-2xl">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">探索率 (Epsilon)</p>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">0.05</span>
+              <span className="text-xl font-bold text-white">0.05</span>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl">
+            <div className="p-4 bg-white/5 rounded-2xl">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">平均步数</p>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">420</span>
+              <span className="text-xl font-bold text-white">420</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">模型库 (Model Zoo)</h3>
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-white mb-6">模型库 (Model Zoo)</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <ModelCard 
               name="PPO" 
@@ -700,10 +700,10 @@ function TrainingModule() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
           <div className="flex items-center gap-3 mb-8">
-            <Settings2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">超参数调节</h3>
+            <Settings2 className="w-5 h-5 text-rose-400" />
+            <h3 className="text-xl font-bold text-white">超参数调节</h3>
           </div>
 
           <div className="space-y-6">
@@ -714,22 +714,22 @@ function TrainingModule() {
           </div>
 
           <div className="mt-8 space-y-3">
-            <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/20">
+            <button className="w-full bg-rose-500 text-white font-bold py-4 rounded-2xl hover:bg-rose-400 transition-all">
               保存并重新训练
             </button>
-            <button className="w-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold py-4 rounded-2xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all">
+            <button className="w-full bg-white/5 text-slate-400 font-bold py-4 rounded-2xl hover:bg-white/10 transition-all">
               导出模型文件 (.pth)
             </button>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 shadow-sm dark:shadow-none">
+        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
           <div className="flex items-center gap-3 mb-4">
-            <Database className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">训练数据集</h3>
+            <Database className="w-5 h-5 text-rose-400" />
+            <h3 className="text-lg font-bold text-white">训练数据集</h3>
           </div>
           <p className="text-xs text-slate-500 mb-4">当前使用：Simustock 300 历史波动数据 (2020-2025)</p>
-          <button className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">上传自定义数据集</button>
+          <button className="text-xs font-bold text-rose-400 hover:underline">上传自定义数据集</button>
         </div>
       </div>
     </motion.div>
@@ -747,15 +747,10 @@ function CommunityModule({ onStartChallenge }: { onStartChallenge?: () => void }
       <section>
         <div className="flex justify-between items-end mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">热门模拟案例</h3>
-              <p className="text-sm text-slate-500">社区精选的高价值模拟场景</p>
-            </div>
+            <Flame className="w-6 h-6 text-rose-500" />
+            <h3 className="text-2xl font-bold text-white">热门模拟案例</h3>
           </div>
-          <button className="text-emerald-600 dark:text-emerald-400 font-bold text-sm flex items-center gap-1 hover:underline">
+          <button className="text-rose-400 font-bold text-sm flex items-center gap-1 hover:underline">
             查看更多 <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -788,13 +783,8 @@ function CommunityModule({ onStartChallenge }: { onStartChallenge?: () => void }
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <section>
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-              <Target className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">本周挑战赛</h3>
-              <p className="text-sm text-slate-500">参与限时挑战，赢取专属奖励</p>
-            </div>
+            <Target className="w-6 h-6 text-amber-400" />
+            <h3 className="text-2xl font-bold text-white">本周挑战赛</h3>
           </div>
           <div className="bg-gradient-to-br from-amber-500/20 to-transparent border border-amber-500/20 rounded-[2rem] p-8">
             <div className="flex justify-between items-start mb-6">
@@ -831,13 +821,8 @@ function CommunityModule({ onStartChallenge }: { onStartChallenge?: () => void }
 
         <section>
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <History className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">经典教学案例</h3>
-              <p className="text-sm text-slate-500">回顾历史，学习金融市场的生存之道</p>
-            </div>
+            <History className="w-6 h-6 text-blue-400" />
+            <h3 className="text-2xl font-bold text-white">经典教学案例</h3>
           </div>
           <div className="space-y-4">
             <TeachingCase title="南海泡沫事件 (1720)" desc="历史上最早的羊群效应与群体狂热。" />
@@ -865,8 +850,8 @@ function Slider({ label, value, onChange, disabled }: { label: string, value: nu
   return (
     <div className={cn("space-y-2", disabled && "opacity-50 cursor-not-allowed")}>
       <div className="flex justify-between text-xs">
-        <span className="text-slate-500 dark:text-slate-400">{label}</span>
-        <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">{value}%</span>
+        <span className="text-slate-400">{label}</span>
+        <span className="text-emerald-400 font-mono font-bold">{value}%</span>
       </div>
       <div className="relative h-6 flex items-center group">
         <input 
@@ -877,7 +862,7 @@ function Slider({ label, value, onChange, disabled }: { label: string, value: nu
           disabled={disabled}
           onChange={(e) => onChange?.(parseInt(e.target.value))}
           className={cn(
-            "w-full h-1.5 bg-slate-200 dark:bg-white/5 rounded-full appearance-none cursor-pointer accent-emerald-500 focus:outline-none transition-all",
+            "w-full h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-emerald-500 focus:outline-none",
             disabled && "cursor-not-allowed"
           )}
         />
@@ -892,7 +877,7 @@ function Slider({ label, value, onChange, disabled }: { label: string, value: nu
 
 function MetricCard({ label, value, color }: { label: string, value: string, color: string }) {
   return (
-    <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-2xl p-4 shadow-sm dark:shadow-none">
+    <div className="bg-[#0F0F12] border border-white/5 rounded-2xl p-4">
       <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">{label}</p>
       <p className={cn("text-lg font-bold", color)}>{value}</p>
     </div>
@@ -967,16 +952,16 @@ function ModelCard({ name, desc, active, onClick }: { name: string, desc: string
 
 function CaseCard({ title, author, stats, tags, impact }: { title: string, author: string, stats: any, tags: string[], impact: string }) {
   return (
-    <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-6 hover:border-emerald-500/20 dark:hover:border-white/20 transition-all group cursor-pointer shadow-sm dark:shadow-none">
+    <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-6 hover:border-white/20 transition-all group cursor-pointer">
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-2">
           {tags.map(tag => (
-            <span key={tag} className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[8px] font-bold text-slate-500 uppercase">{tag}</span>
+            <span key={tag} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-bold text-slate-500 uppercase">{tag}</span>
           ))}
         </div>
-        <span className={cn("text-xs font-bold", impact.startsWith('-') ? "text-rose-500 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400")}>{impact}</span>
+        <span className={cn("text-xs font-bold", impact.startsWith('-') ? "text-rose-400" : "text-emerald-400")}>{impact}</span>
       </div>
-      <h4 className="font-bold text-slate-900 dark:text-white mb-4 group-hover:text-emerald-500 transition-colors">{title}</h4>
+      <h4 className="font-bold text-white mb-4 group-hover:text-emerald-400 transition-colors">{title}</h4>
       <div className="flex justify-between items-center text-[10px] text-slate-500">
         <span>By {author}</span>
         <div className="flex gap-3">

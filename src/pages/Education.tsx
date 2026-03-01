@@ -63,18 +63,18 @@ export default function Education({ user, setUser, market }: EducationProps) {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
       <header className="flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">教育中心</h2>
-          <p className="text-slate-500">从零开始，掌握行为金融与智能体模拟的奥秘</p>
+          <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight">教育中心</h2>
+          <p className="text-[var(--muted-foreground)]">从零开始，掌握行为金融与智能体模拟的奥秘</p>
         </div>
-        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+        <div className="flex bg-[var(--muted)] p-1 rounded-xl border border-[var(--border)]">
           <button 
             onClick={() => setActiveTab('courses')}
             className={cn(
               "px-6 py-2 rounded-lg text-sm font-bold transition-all",
-              activeTab === 'courses' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-slate-400 hover:text-white"
+              activeTab === 'courses' ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             )}
           >
             精品课程
@@ -83,7 +83,7 @@ export default function Education({ user, setUser, market }: EducationProps) {
             onClick={() => setActiveTab('training')}
             className={cn(
               "px-6 py-2 rounded-lg text-sm font-bold transition-all",
-              activeTab === 'training' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-slate-400 hover:text-white"
+              activeTab === 'training' ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             )}
           >
             互动训练营
@@ -99,18 +99,18 @@ export default function Education({ user, setUser, market }: EducationProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 hover:border-white/10 transition-all group"
+              className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8 hover:border-rose-500/30 transition-all group"
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-emerald-500/10 transition-colors">
-                <course.icon className="w-7 h-7 text-slate-400 group-hover:text-emerald-400 transition-colors" />
+              <div className="w-14 h-14 rounded-2xl bg-[var(--muted)] flex items-center justify-center mb-6 group-hover:bg-rose-500/10 transition-colors">
+                <course.icon className="w-7 h-7 text-[var(--muted-foreground)] group-hover:text-rose-500 transition-colors" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">{course.title}</h3>
+              <h3 className="text-xl font-bold text-[var(--foreground)] mb-4">{course.title}</h3>
               <div className="flex items-center gap-4 mb-8">
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">{course.level}</span>
-                <span className="text-xs text-slate-500 flex items-center gap-1"><Play className="w-3 h-3" /> {course.duration}</span>
-                <span className="text-xs text-slate-500 flex items-center gap-1"><Users className="w-3 h-3" /> {course.students}</span>
+                <span className="text-xs font-bold text-rose-500 bg-rose-500/10 px-2 py-1 rounded-md">{course.level}</span>
+                <span className="text-xs text-[var(--muted-foreground)] flex items-center gap-1"><Play className="w-3 h-3" /> {course.duration}</span>
+                <span className="text-xs text-[var(--muted-foreground)] flex items-center gap-1"><Users className="w-3 h-3" /> {course.students}</span>
               </div>
-              <button className="w-full py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-all">
+              <button className="w-full py-3 bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--foreground)] font-bold rounded-xl border border-[var(--border)] transition-all">
                 开始学习
               </button>
             </motion.div>
@@ -126,49 +126,49 @@ export default function Education({ user, setUser, market }: EducationProps) {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-[#0F0F12] border border-white/5 rounded-[2.5rem] p-10"
+                  className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] p-10"
                 >
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center">
                       {activeStep === trainingSteps.length - 1 ? (
-                        <Play className="w-6 h-6 text-emerald-400" />
+                        <Play className="w-6 h-6 text-rose-500" />
                       ) : (
-                        <BookOpen className="w-6 h-6 text-emerald-400" />
+                        <BookOpen className="w-6 h-6 text-rose-500" />
                       )}
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Step {activeStep + 1} of {trainingSteps.length}</p>
-                      <h3 className="text-2xl font-bold text-white">{trainingSteps[activeStep].title}</h3>
+                      <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Step {activeStep + 1} of {trainingSteps.length}</p>
+                      <h3 className="text-2xl font-bold text-[var(--foreground)]">{trainingSteps[activeStep].title}</h3>
                     </div>
                   </div>
 
-                  <p className="text-slate-400 leading-relaxed mb-10 text-lg">
+                  <p className="text-[var(--muted-foreground)] leading-relaxed mb-10 text-lg">
                     {trainingSteps[activeStep].description}
                   </p>
 
                   <div className="space-y-4 mb-10">
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">今日任务</p>
+                    <p className="text-xs font-bold text-[var(--muted-foreground)] uppercase tracking-widest">今日任务</p>
                     {trainingSteps[activeStep].tasks.map((task, idx) => (
-                      <div key={idx} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-emerald-500/30 transition-all">
-                        <div className="w-6 h-6 rounded-full border-2 border-slate-700 flex items-center justify-center group-hover:border-emerald-500 transition-colors">
-                          <CheckCircle2 className="w-4 h-4 text-transparent group-hover:text-emerald-500" />
+                      <div key={idx} className="flex items-center gap-4 p-4 bg-[var(--muted)] rounded-2xl border border-[var(--border)] group hover:border-rose-500/30 transition-all">
+                        <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] flex items-center justify-center group-hover:border-rose-500 transition-colors">
+                          <CheckCircle2 className="w-4 h-4 text-transparent group-hover:text-rose-500" />
                         </div>
-                        <span className="text-slate-300 font-medium">{task}</span>
+                        <span className="text-[var(--foreground)] font-medium">{task}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex justify-between items-center pt-8 border-t border-white/5">
+                  <div className="flex justify-between items-center pt-8 border-t border-[var(--border)]">
                     <button 
                       onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
                       disabled={activeStep === 0}
-                      className="text-slate-500 font-bold hover:text-white disabled:opacity-30 transition-colors"
+                      className="text-[var(--muted-foreground)] font-bold hover:text-[var(--foreground)] disabled:opacity-30 transition-colors"
                     >
                       上一步
                     </button>
                     <button 
                       onClick={() => setActiveStep(Math.min(trainingSteps.length - 1, activeStep + 1))}
-                      className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20"
+                      className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-rose-500/20"
                     >
                       {activeStep === trainingSteps.length - 1 ? '完成训练' : '下一步'}
                       <ChevronRight className="w-4 h-4" />
@@ -181,16 +181,16 @@ export default function Education({ user, setUser, market }: EducationProps) {
             <div className="space-y-6">
               <div className="bg-amber-500/5 border border-amber-500/10 rounded-[2rem] p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <Lightbulb className="w-6 h-6 text-amber-400" />
-                  <h4 className="font-bold text-white">投资锦囊</h4>
+                  <Lightbulb className="w-6 h-6 text-amber-500" />
+                  <h4 className="font-bold text-[var(--foreground)]">投资锦囊</h4>
                 </div>
-                <p className="text-sm text-slate-400 leading-relaxed italic">
+                <p className="text-sm text-[var(--muted-foreground)] leading-relaxed italic">
                   "在模拟盘中，最宝贵的不是你赚了多少虚拟货币，而是你观察到了多少次智能体的非理性行为，并学会了如何利用它们。"
                 </p>
               </div>
 
-              <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-                <h4 className="font-bold text-white mb-6 flex items-center gap-2">
+              <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+                <h4 className="font-bold text-[var(--foreground)] mb-6 flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-amber-500" /> 训练营排行榜
                 </h4>
                 <div className="space-y-4">
@@ -201,10 +201,10 @@ export default function Education({ user, setUser, market }: EducationProps) {
                   ].map((user, idx) => (
                     <div key={idx} className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-slate-600">0{idx + 1}</span>
-                        <span className="text-sm text-slate-400">{user.name}</span>
+                        <span className="text-xs font-bold text-[var(--muted-foreground)] opacity-50">0{idx + 1}</span>
+                        <span className="text-sm text-[var(--muted-foreground)]">{user.name}</span>
                       </div>
-                      <span className="text-sm font-bold text-emerald-400">{user.roi}</span>
+                      <span className="text-sm font-bold text-rose-500">{user.roi}</span>
                     </div>
                   ))}
                 </div>
@@ -215,25 +215,25 @@ export default function Education({ user, setUser, market }: EducationProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <BehavioralFeedback user={user} />
             
-            <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6">
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-rose-500" />
                 绩效分析 (ROI)
               </h3>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={user.equityHistory}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
                     <XAxis dataKey="time" hide />
                     <YAxis domain={['auto', 'auto']} hide />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#18181b', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                      itemStyle={{ color: '#10b981' }}
+                      contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }}
+                      itemStyle={{ color: '#f43f5e' }}
                     />
                     <Line 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="#10b981" 
+                      stroke="#f43f5e" 
                       strokeWidth={2} 
                       dot={false}
                     />

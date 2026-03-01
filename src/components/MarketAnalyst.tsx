@@ -60,21 +60,21 @@ export default function MarketAnalyst({ market }: MarketAnalystProps) {
   };
 
   return (
-    <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 overflow-hidden relative">
+    <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8 overflow-hidden relative">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-            <BrainCircuit className="w-6 h-6 text-violet-400" />
+          <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+            <BrainCircuit className="w-6 h-6 text-rose-500" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">AI 市场分析师</h3>
-            <p className="text-xs text-slate-500">由 Gemini 智能驱动</p>
+            <h3 className="text-xl font-bold text-[var(--foreground)]">AI 市场分析师</h3>
+            <p className="text-xs text-[var(--muted-foreground)]">由 Gemini 智能驱动</p>
           </div>
         </div>
         <button
           onClick={analyzeMarket}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-violet-500 hover:bg-violet-400 disabled:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20 active:scale-95"
+          className="flex items-center gap-2 px-6 py-3 bg-rose-500 hover:bg-rose-600 disabled:bg-[var(--muted)] text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20 active:scale-95"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           {loading ? '分析中...' : '生成研报'}
@@ -82,14 +82,14 @@ export default function MarketAnalyst({ market }: MarketAnalystProps) {
       </div>
 
       {analysis ? (
-        <div className="markdown-body bg-white/5 rounded-2xl p-6 border border-white/5 max-h-[400px] overflow-y-auto">
+        <div className="markdown-body bg-[var(--muted)] rounded-2xl p-6 border border-[var(--border)] max-h-[400px] overflow-y-auto">
           <Markdown
             components={{
               img: ({ node, ...props }) => (
                 <img 
                   {...props} 
                   referrerPolicy="no-referrer" 
-                  className="rounded-xl border border-white/10 my-4 max-w-full h-auto" 
+                  className="rounded-xl border border-[var(--border)] my-4 max-w-full h-auto" 
                 />
               )
             }}
@@ -99,10 +99,10 @@ export default function MarketAnalyst({ market }: MarketAnalystProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-            <Sparkles className="w-8 h-8 text-slate-700" />
+          <div className="w-16 h-16 rounded-full bg-[var(--muted)] flex items-center justify-center mb-4">
+            <Sparkles className="w-8 h-8 text-[var(--muted-foreground)]" />
           </div>
-          <p className="text-slate-500 text-sm max-w-xs">
+          <p className="text-[var(--muted-foreground)] text-sm max-w-xs">
             点击上方按钮，获取当前 Simustock 市场动态的深度分析。
           </p>
         </div>

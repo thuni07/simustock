@@ -13,7 +13,7 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
     const feedback: { type: 'positive' | 'warning', text: string, icon: any }[] = [];
     
     if (user.trades.length < 3) {
-      return [{ type: 'positive', text: 'Start trading to receive behavioral analysis.', icon: ShieldCheck }];
+      return [{ type: 'positive', text: '开始交易以接收行为分析。', icon: ShieldCheck }];
     }
 
     const buyTrades = user.trades.filter(t => t.type === 'BUY');
@@ -28,7 +28,7 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
     if (fomoTrades.length > buyTrades.length * 0.6) {
       feedback.push({ 
         type: 'warning', 
-        text: 'Detected FOMO tendencies: You tend to buy when prices are peaking.', 
+        text: '检测到 FOMO 倾向：您倾向于在价格见顶时买入。', 
         icon: AlertCircle 
       });
     }
@@ -42,7 +42,7 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
     if (panicTrades.length > sellTrades.length * 0.5) {
       feedback.push({ 
         type: 'warning', 
-        text: 'Potential Panic Selling: You often exit positions during minor downturns.', 
+        text: '潜在的恐慌性抛售：您经常在轻微回调期间退出头寸。', 
         icon: Zap 
       });
     }
@@ -50,7 +50,7 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
     if (feedback.length === 0) {
       feedback.push({ 
         type: 'positive', 
-        text: 'Disciplined approach: Your trading patterns show rational decision making.', 
+        text: '纪律严明：您的交易模式显示出理性的决策能力。', 
         icon: TrendingUp 
       });
     }
@@ -63,8 +63,8 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
   return (
     <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-6">
       <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <ShieldCheck className="w-5 h-5 text-emerald-400" />
-        Behavioral Feedback
+        <ShieldCheck className="w-5 h-5 text-rose-400" />
+        行为反馈 (Behavioral Feedback)
       </h3>
       <div className="space-y-3">
         {insights.map((insight, idx) => (
@@ -74,16 +74,16 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
             animate={{ opacity: 1, x: 0 }}
             className={cn(
               "p-4 rounded-2xl flex items-start gap-3 border",
-              insight.type === 'positive' ? "bg-emerald-500/5 border-emerald-500/10" : "bg-amber-500/5 border-amber-500/10"
+              insight.type === 'positive' ? "bg-rose-500/5 border-rose-500/10" : "bg-amber-500/5 border-amber-500/10"
             )}
           >
             <insight.icon className={cn(
               "w-5 h-5 mt-0.5",
-              insight.type === 'positive' ? "text-emerald-400" : "text-amber-400"
+              insight.type === 'positive' ? "text-rose-400" : "text-amber-400"
             )} />
             <p className={cn(
               "text-sm font-medium",
-              insight.type === 'positive' ? "text-emerald-100" : "text-amber-100"
+              insight.type === 'positive' ? "text-rose-100" : "text-amber-100"
             )}>
               {insight.text}
             </p>

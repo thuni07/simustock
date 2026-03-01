@@ -11,19 +11,36 @@ import Community from './pages/Community';
 import MemberCenter from './pages/MemberCenter';
 import HelpCenter from './pages/HelpCenter';
 import Trade from './pages/Trade';
-import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
 import { useMarketSimulation } from './hooks/useMarketSimulation';
 import { UserProfile } from './types';
 import { cn } from './lib/utils';
 
 export default function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('mas_rl_theme');
+    return (saved as 'light' | 'dark') || 'dark';
+  });
+
   const [user, setUser] = useState<UserProfile | null>(() => {
     const saved = localStorage.getItem('mas_rl_user');
     return saved ? JSON.parse(saved) : null;
   });
 
   const market = useMarketSimulation();
+
+  useEffect(() => {
+    localStorage.setItem('mas_rl_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
 
   useEffect(() => {
     if (user) {
@@ -63,12 +80,9 @@ export default function App() {
 
   return (
     <Router>
-      <div className="flex h-screen bg-[#0A0A0B] text-slate-200 overflow-hidden font-sans relative">
-        <Sidebar user={user} />
-        <main className={cn(
-          "flex-1 overflow-y-auto p-6 custom-scrollbar transition-all duration-300",
-          !isSidebarOpen && "ml-0"
-        )}>
+      <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] overflow-hidden font-sans relative transition-colors duration-300">
+        <Navbar user={user} theme={theme} onToggleTheme={toggleTheme} />
+        <main className="flex-1 overflow-y-auto py-8 custom-scrollbar transition-all duration-300">
           <Routes>
             <Route path="/" element={<Dashboard user={user} setUser={setUser} market={market} />} />
             <Route path="/market" element={<MarketCenter market={market} />} />
@@ -76,7 +90,7 @@ export default function App() {
             <Route path="/lab" element={<AgentLab market={market} />} />
             <Route path="/reports" element={<DataReports />} />
             <Route path="/education" element={<Education user={user} setUser={setUser} market={market} />} />
-            <Route path="/community" element={<Community currentUser={user} />} />
+            <Route path="/community" element={<Community user={user} setUser={setUser} />} />
             <Route path="/member" element={<MemberCenter />} />
             <Route path="/settings" element={<Settings user={user} setUser={setUser} />} />
             <Route path="/help" element={<HelpCenter />} />

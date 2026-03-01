@@ -39,7 +39,7 @@ export default function MemberCenter() {
       ],
       isPopular: true,
       buttonText: '立即订阅',
-      buttonClass: 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20'
+      buttonClass: 'bg-rose-500 hover:bg-rose-400 text-white shadow-lg shadow-rose-500/20'
     },
     {
       name: '企业版',
@@ -59,7 +59,7 @@ export default function MemberCenter() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-12">
       <header className="text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest">
           <Crown className="w-4 h-4" /> Freemium 商业模式
@@ -79,11 +79,11 @@ export default function MemberCenter() {
             transition={{ delay: idx * 0.1 }}
             className={cn(
               "relative bg-[#0F0F12] border rounded-[2.5rem] p-10 flex flex-col h-full transition-all duration-300",
-              plan.isPopular ? "border-emerald-500/50 shadow-2xl shadow-emerald-500/10 scale-105 z-10" : "border-white/5 hover:border-white/10"
+              plan.isPopular ? "border-rose-500/50 shadow-2xl shadow-rose-500/10 scale-105 z-10" : "border-white/5 hover:border-white/10"
             )}
           >
             {plan.isPopular && (
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
                 最受欢迎
               </div>
             )}
@@ -100,8 +100,8 @@ export default function MemberCenter() {
             <div className="flex-1 space-y-4 mb-10">
               {plan.features.map(feature => (
                 <div key={feature} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center mt-0.5">
-                    <Check className="w-3 h-3 text-emerald-400" />
+                  <div className="w-5 h-5 rounded-full bg-rose-500/10 flex items-center justify-center mt-0.5">
+                    <Check className="w-3 h-3 text-rose-400" />
                   </div>
                   <span className="text-sm text-slate-300">{feature}</span>
                 </div>
@@ -131,7 +131,7 @@ export default function MemberCenter() {
             <p className="text-xs text-slate-500">多重加密保护您的策略隐私与数据安全。</p>
           </div>
           <div className="space-y-3">
-            <Cpu className="w-8 h-8 text-emerald-400" />
+            <Cpu className="w-8 h-8 text-rose-400" />
             <h4 className="font-bold text-white">AI 驱动</h4>
             <p className="text-xs text-slate-500">基于 DRL 的智能体实验室，探索无限可能。</p>
           </div>

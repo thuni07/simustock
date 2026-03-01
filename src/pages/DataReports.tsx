@@ -44,11 +44,11 @@ export default function DataReports() {
   ];
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
       <header className="flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">数据研报中心</h2>
-          <p className="text-slate-500">B端专业价值输出，深度洞察模拟市场动态</p>
+          <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight">数据研报中心</h2>
+          <p className="text-[var(--muted-foreground)]">B端专业价值输出，深度洞察模拟市场动态</p>
         </div>
       </header>
 
@@ -59,35 +59,35 @@ export default function DataReports() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 hover:border-emerald-500/20 dark:hover:border-white/10 transition-all group relative overflow-hidden shadow-sm dark:shadow-none"
+            className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8 hover:border-rose-500/30 transition-all group relative overflow-hidden"
           >
             {report.isPremium && (
-              <div className="absolute top-0 right-0 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-4 py-2 rounded-bl-2xl flex items-center gap-2 text-[10px] font-bold uppercase">
+              <div className="absolute top-0 right-0 bg-amber-500/10 text-amber-500 px-4 py-2 rounded-bl-2xl flex items-center gap-2 text-[10px] font-bold uppercase">
                 <Lock className="w-3 h-3" /> 会员专属
               </div>
             )}
             
             <div className="flex items-start justify-between mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-emerald-500/10 transition-colors">
-                <FileText className="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+              <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center group-hover:bg-rose-500/10 transition-colors">
+                <FileText className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-rose-500 transition-colors" />
               </div>
-              <div className="flex items-center gap-2 text-slate-500 text-xs">
+              <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-xs">
                 <Clock className="w-3 h-3" /> {report.date}
               </div>
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-500 transition-colors">{report.title}</h3>
-            <p className="text-sm text-slate-500 mb-8 leading-relaxed">{report.desc}</p>
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-2 group-hover:text-rose-500 transition-colors">{report.title}</h3>
+            <p className="text-sm text-[var(--muted-foreground)] mb-8 leading-relaxed">{report.desc}</p>
 
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-white/5">
-              <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+            <div className="flex items-center justify-between pt-6 border-t border-[var(--border)]">
+              <span className="px-3 py-1 rounded-lg bg-[var(--muted)] text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">
                 {report.type}
               </span>
               <div className="flex gap-4">
-                <button className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1 text-xs font-bold">
+                <button className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1 text-xs font-bold">
                   <Eye className="w-4 h-4" /> 预览
                 </button>
-                <button className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors flex items-center gap-1 text-xs font-bold">
+                <button className="text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1 text-xs font-bold">
                   <Download className="w-4 h-4" /> 下载
                 </button>
               </div>
@@ -96,43 +96,43 @@ export default function DataReports() {
         ))}
       </div>
 
-      <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-10 shadow-sm dark:shadow-none">
-        <div className="flex items-center gap-3 mb-8">
-          <Database className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white">申请 API 接口</h3>
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] p-10">
+        <div className="flex items-center gap-3 mb-6">
+          <Database className="w-6 h-6 text-rose-500" />
+          <h3 className="text-xl font-bold text-[var(--foreground)]">申请 API 接口</h3>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+            <p className="text-[var(--muted-foreground)] mb-8 leading-relaxed">
               我们为机构客户提供完整的模拟盘数据 API，支持毫秒级智能体行为追踪及情绪原始数据导出。通过 API，您可以将 Simustock 的行为金融数据集成到您的量化交易系统中。
             </p>
             <div className="flex flex-wrap gap-6">
               <div className="flex items-center gap-3">
-                <BarChart className="w-5 h-5 text-emerald-500" />
-                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">实时情绪流</span>
+                <BarChart className="w-5 h-5 text-rose-500" />
+                <span className="text-sm text-[var(--foreground)] font-medium">实时情绪流</span>
               </div>
               <div className="flex items-center gap-3">
                 <PieChart className="w-5 h-5 text-blue-500" />
-                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">智能体持仓分布</span>
+                <span className="text-sm text-[var(--foreground)] font-medium">智能体持仓分布</span>
               </div>
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-5 h-5 text-purple-500" />
-                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">RL策略预测数据</span>
+                <span className="text-sm text-[var(--foreground)] font-medium">RL策略预测数据</span>
               </div>
             </div>
           </div>
-          <div className="bg-slate-50 dark:bg-white/5 rounded-[2rem] p-8 border border-slate-100 dark:border-white/5">
-            <h4 className="text-slate-900 dark:text-white font-bold mb-4">快速申请</h4>
+          <div className="bg-[var(--muted)] rounded-[2rem] p-8 border border-[var(--border)]">
+            <h4 className="text-[var(--foreground)] font-bold mb-4">快速申请</h4>
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-500 uppercase">机构名称</label>
-                <input type="text" className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:border-emerald-500 outline-none transition-colors" placeholder="输入您的机构或团队名称" />
+                <label className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">机构名称</label>
+                <input type="text" className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm focus:border-rose-500 outline-none transition-colors" placeholder="输入您的机构或团队名称" />
               </div>
-              <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+              <button className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-rose-500/20">
                 提交申请
               </button>
-              <p className="text-[10px] text-slate-500 text-center">提交后我们的技术团队将在 24 小时内与您联系</p>
+              <p className="text-[10px] text-[var(--muted-foreground)] text-center">提交后我们的技术团队将在 24 小时内与您联系</p>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   TrendingUp, 
@@ -7,7 +8,9 @@ import {
   ArrowUpRight, 
   ArrowDownRight,
   Search,
-  Filter
+  Filter,
+  ChevronRight,
+  BarChart3
 } from 'lucide-react';
 import { Stock } from '../types';
 import { cn } from '../lib/utils';
@@ -18,139 +21,191 @@ interface MarketCenterProps {
 
 export default function MarketCenter({ market }: MarketCenterProps) {
   const { stocks } = market;
+  const [activeTab, setActiveTab] = useState('A股');
+
+  const tabs = ['自选', 'A股', '港股', '美股', '概念', '行业'];
+
+  // Sort stocks for sidebars
+  const topGainers = [...stocks].sort((a, b) => b.changePercent - a.changePercent).slice(0, 5);
+  const topLosers = [...stocks].sort((a, b) => a.changePercent - b.changePercent).slice(0, 5);
 
   return (
-    <div className="space-y-6">
-      <header className="flex justify-between items-center">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">行情中心</h2>
-          <p className="text-slate-500">传统行情数据 + 行为金融特色指标</p>
+          <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight">行情中心</h2>
+          <p className="text-[var(--muted-foreground)] text-sm">全市场实时行情数据与行为金融指标</p>
         </div>
-        <div className="flex gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <div className="flex gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
             <input 
               type="text" 
               placeholder="搜索股票代码/名称" 
-              className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition-all"
             />
           </div>
-          <button className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors">
+          <button className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm text-[var(--muted-foreground)] flex items-center gap-2 hover:bg-[var(--muted)] transition-colors">
             <Filter className="w-4 h-4" /> 筛选
           </button>
         </div>
       </header>
 
-      <div className="bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-sm dark:shadow-none">
-        <table className="w-full text-left">
-          <thead className="bg-slate-50 dark:bg-white/5">
-            <tr>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">股票名称</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">最新价</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">涨跌幅</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">恐慌指数</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">羊群效应</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">智能体情绪</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">操作</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-            {stocks.map((stock: Stock) => (
-              <tr key={stock.symbol} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
-                <td className="px-6 py-4">
+      {/* Market Tabs */}
+      <div className="flex border-b border-[var(--border)] gap-8">
+        {tabs.map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={cn(
+              "pb-4 text-sm font-bold transition-all relative",
+              activeTab === tab ? "text-rose-500" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            )}
+          >
+            {tab}
+            {activeTab === tab && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-400"
+              />
+            )}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Main Stock List */}
+        <div className="lg:col-span-9 space-y-6">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-3xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[var(--muted)]">
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">代码名称</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest text-right">最新价</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest text-right">涨跌幅</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest text-right">成交额</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">市场情绪</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">操作</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border)]">
+                  {stocks.map((stock: Stock) => (
+                    <tr key={stock.symbol} className="hover:bg-[var(--muted)] transition-colors group cursor-pointer">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg",
+                            stock.changePercent >= 0 ? "bg-gradient-to-br from-rose-500 to-orange-500" : "bg-gradient-to-br from-emerald-500 to-teal-500"
+                          )}>
+                            {stock.symbol[0]}
+                          </div>
+                          <div>
+                            <p className="font-bold text-[var(--foreground)] group-hover:text-rose-500 transition-colors">{stock.symbol}</p>
+                            <p className="text-[10px] text-[var(--muted-foreground)]">{stock.name}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={cn(
+                        "px-6 py-4 font-mono font-bold text-right",
+                        stock.changePercent >= 0 ? "text-rose-500" : "text-emerald-500"
+                      )}>
+                        {stock.price.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className={cn(
+                          "inline-flex items-center gap-1 text-sm font-bold px-2 py-1 rounded-lg",
+                          stock.changePercent >= 0 ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"
+                        )}>
+                          {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-mono text-[var(--muted-foreground)] text-right text-sm">
+                        {(stock.price * 1240).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-1.5 bg-[var(--muted)] rounded-full overflow-hidden max-w-[80px]">
+                            <div 
+                              className={cn("h-full transition-all duration-1000", stock.sentiment > 0 ? "bg-rose-500" : "bg-emerald-500")}
+                              style={{ width: `${(Math.abs(stock.sentiment) * 100)}%` }}
+                            />
+                          </div>
+                          <span className={cn(
+                            "text-[10px] font-bold",
+                            stock.sentiment > 0 ? "text-rose-500" : "text-emerald-500"
+                          )}>
+                            {stock.sentiment > 0 ? '看多' : '看空'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button className="p-2 hover:bg-[var(--muted)] rounded-lg transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar - Rankings */}
+        <div className="lg:col-span-3 space-y-6">
+          <section className="bg-[#16161A] border border-white/5 rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-rose-500" /> 涨幅榜
+              </h3>
+              <BarChart3 className="w-4 h-4 text-slate-500" />
+            </div>
+            <div className="space-y-4">
+              {topGainers.map((stock, i) => (
+                <div key={stock.symbol} className="flex justify-between items-center group cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center font-bold text-emerald-500 dark:text-emerald-400">
-                      {stock.symbol[0]}
-                    </div>
+                    <span className="text-[10px] font-mono text-slate-600 w-4">{i + 1}</span>
                     <div>
-                      <p className="font-bold text-slate-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">{stock.symbol}</p>
+                      <p className="text-xs font-bold text-white group-hover:text-rose-500 transition-colors">{stock.symbol}</p>
                       <p className="text-[10px] text-slate-500">{stock.name}</p>
                     </div>
                   </div>
-                </td>
-                <td className="px-6 py-4 font-mono text-slate-900 dark:text-white">${stock.price.toFixed(2)}</td>
-                <td className="px-6 py-4">
-                  <div className={cn(
-                    "flex items-center gap-1 text-sm font-bold",
-                    stock.change >= 0 ? "text-emerald-500 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"
-                  )}>
-                    {stock.change >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                    {Math.abs(stock.changePercent).toFixed(2)}%
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden max-w-[60px]">
-                      <div 
-                        className={cn("h-full transition-all duration-500", stock.panicIndex > 50 ? "bg-rose-500" : "bg-emerald-500")}
-                        style={{ width: `${stock.panicIndex}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-mono text-slate-400">{stock.panicIndex.toFixed(0)}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden max-w-[60px]">
-                      <div 
-                        className="h-full bg-amber-500 transition-all duration-500"
-                        style={{ width: `${stock.herdingIntensity}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-mono text-slate-400">{stock.herdingIntensity.toFixed(0)}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className={cn(
-                    "text-xs font-bold px-2 py-1 rounded-md inline-block",
-                    stock.sentiment > 0 ? "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400" : "bg-rose-500/10 text-rose-500 dark:text-rose-400"
-                  )}>
-                    {stock.sentiment > 0 ? '乐观' : '悲观'} ({(stock.sentiment * 100).toFixed(0)}%)
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <button className="text-xs font-bold text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors">
-                    查看详情
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  <span className="text-xs font-mono font-bold text-rose-500">+{stock.changePercent.toFixed(2)}%</span>
+                </div>
+              ))}
+            </div>
+          </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-3xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Flame className="w-5 h-5 text-orange-500" />
-            <h4 className="font-bold text-slate-900 dark:text-white">热门板块</h4>
+          <section className="bg-[#16161A] border border-white/5 rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <TrendingDown className="w-4 h-4 text-emerald-500" /> 跌幅榜
+              </h3>
+              <BarChart3 className="w-4 h-4 text-slate-500" />
+            </div>
+            <div className="space-y-4">
+              {topLosers.map((stock, i) => (
+                <div key={stock.symbol} className="flex justify-between items-center group cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono text-slate-600 w-4">{i + 1}</span>
+                    <div>
+                      <p className="text-xs font-bold text-white group-hover:text-emerald-500 transition-colors">{stock.symbol}</p>
+                      <p className="text-[10px] text-slate-500">{stock.name}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-emerald-500">{stock.changePercent.toFixed(2)}%</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-3xl p-6">
+            <h4 className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">异动雷达</h4>
+            <p className="text-[10px] text-slate-400 leading-relaxed">
+              检测到 <span className="text-white font-bold">TECH</span> 出现机构大单买入，羊群效应强度正在上升，建议关注。
+            </p>
           </div>
-          <div className="space-y-3">
-            {['人工智能', '生物医药', '绿色能源'].map(tag => (
-              <div key={tag} className="flex justify-between items-center">
-                <span className="text-sm text-slate-500 dark:text-slate-400">{tag}</span>
-                <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400">+2.45%</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="bg-rose-500/5 border border-rose-500/10 rounded-3xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-5 h-5 text-rose-500" />
-            <h4 className="font-bold text-slate-900 dark:text-white">异动提醒</h4>
-          </div>
-          <div className="space-y-3">
-            <p className="text-xs text-slate-500 dark:text-slate-400">TECH 触发羊群效应警报，波动率激增</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">BIO 出现恐慌性抛售迹象，机构正在吸筹</p>
-          </div>
-        </div>
-        <div className="bg-blue-500/5 border border-blue-500/10 rounded-3xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-blue-500" />
-            <h4 className="font-bold text-slate-900 dark:text-white">市场温度</h4>
-          </div>
-          <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">68°C</div>
-          <p className="text-xs text-slate-500">当前市场处于“活跃”状态，智能体情绪偏向乐观</p>
         </div>
       </div>
     </div>
