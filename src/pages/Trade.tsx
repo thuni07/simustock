@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   TrendingUp, 
@@ -32,10 +33,59 @@ interface TradeProps {
 }
 
 export default function Trade({ user, setUser, market }: TradeProps) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { stocks } = market;
   const [selectedStock, setSelectedStock] = useState<Stock>(stocks[0]);
   const [amount, setAmount] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'trade' | 'portfolio' | 'history'>('trade');
+  const [chartType, setChartType] = useState('分时');
+  const [priceType, setPriceType] = useState<'market' | 'limit'>('market');
+  const [limitPrice, setLimitPrice] = useState<number>(0);
+  const [showSentimentSub, setShowSentimentSub] = useState(false);
+
+  useEffect(() => {
+    if (selectedStock) {
+      setLimitPrice(selectedStock.price);
+    }
+  }, [selectedStock]);
+
+  const getChartData = () => {
+    const baseData = selectedStock.history;
+    switch (chartType) {
+      case '5日':
+        return Array.from({ length: 100 }, (_, i) => ({
+          time: `Day ${Math.floor(i / 20) + 1}`,
+          price: baseData[i % 20].price + (Math.random() - 0.5) * 5
+        }));
+      case '日K':
+        return Array.from({ length: 30 }, (_, i) => ({
+          time: `2024-02-${i + 1}`,
+          price: selectedStock.price + Math.sin(i / 5) * 20 + Math.random() * 10
+        }));
+      case '周K':
+        return Array.from({ length: 12 }, (_, i) => ({
+          time: `Week ${i + 1}`,
+          price: selectedStock.price - 20 + i * 5 + Math.random() * 15
+        }));
+      default:
+        return baseData;
+    }
+  };
+
+  useEffect(() => {
+    const symbol = searchParams.get('symbol');
+    const source = searchParams.get('source');
+    if (symbol) {
+      const stock = stocks.find((s: Stock) => s.symbol === symbol);
+      if (stock) {
+        setSelectedStock(stock);
+        if (source === 'radar') {
+          alert(`已为您加载异动雷达推荐股票：${symbol}`);
+        }
+      }
+    }
+  }, [searchParams, stocks]);
 
   const handleTrade = (type: 'BUY' | 'SELL') => {
     const totalCost = selectedStock.price * amount;
@@ -156,8 +206,30 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                 </div>
 
                 <div className="h-[300px] w-full mb-8">
+                  <div className="flex justify-between items-center mb-4">
+                    <button 
+                      onClick={() => setShowSentimentSub(!showSentimentSub)}
+                      className={cn(
+                        "text-[10px] font-bold px-3 py-1 rounded-lg border transition-all",
+                        showSentimentSub ? "bg-rose-500/10 border-rose-500 text-rose-500" : "border-[var(--border)] text-[var(--muted-foreground)]"
+                      )}
+                    >
+                      {showSentimentSub ? '隐藏情绪副图' : '显示情绪副图'}
+                    </button>
+                    <div className="flex bg-[var(--muted)] p-1 rounded-xl">
+                      {['分时', '5日', '日K', '周K'].map(t => (
+                        <button 
+                          key={t} 
+                          onClick={() => setChartType(t)}
+                          className={cn(
+                            "px-3 py-1 rounded-lg text-[10px] font-bold transition-all",
+                            t === chartType ? "bg-rose-500 text-white shadow-lg" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                          )}>{t}</button>
+                      ))}
+                    </div>
+                  </div>
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={selectedStock.history}>
+                    <AreaChart data={getChartData()}>
                       <defs>
                         <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
@@ -172,14 +244,27 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                         itemStyle={{ color: '#f43f5e' }}
                       />
                       <Area 
+                        key={chartType}
                         type="monotone" 
                         dataKey="price" 
                         stroke="#f43f5e" 
                         fillOpacity={1} 
                         fill="url(#colorPrice)" 
                         strokeWidth={2}
-                        animationDuration={1000}
+                        animationDuration={800}
                       />
+                      {showSentimentSub && (
+                        <Area 
+                          type="monotone" 
+                          dataKey="sentiment" 
+                          stroke="#6366f1" 
+                          fill="#6366f1" 
+                          fillOpacity={0.1}
+                          strokeWidth={1}
+                          yAxisId="sentiment"
+                        />
+                      )}
+                      <YAxis yAxisId="sentiment" hide domain={[-1, 1]} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -211,6 +296,30 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
+                    <div className="flex bg-[var(--muted)] p-1 rounded-xl mb-4">
+                      <button 
+                        onClick={() => setPriceType('market')}
+                        className={cn("flex-1 py-1.5 rounded-lg text-xs font-bold transition-all", priceType === 'market' ? "bg-rose-500 text-white" : "text-[var(--muted-foreground)]")}
+                      >市价委托</button>
+                      <button 
+                        onClick={() => setPriceType('limit')}
+                        className={cn("flex-1 py-1.5 rounded-lg text-xs font-bold transition-all", priceType === 'limit' ? "bg-rose-500 text-white" : "text-[var(--muted-foreground)]")}
+                      >限价委托</button>
+                    </div>
+
+                    {priceType === 'limit' && (
+                      <div className="relative">
+                        <input 
+                          type="number" 
+                          value={limitPrice}
+                          onChange={(e) => setLimitPrice(parseFloat(e.target.value) || 0)}
+                          className="w-full bg-[var(--muted)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-rose-500/50"
+                          placeholder="委托价格"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] text-sm">$</span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--muted-foreground)]">可用余额</span>
                       <span className="text-[var(--foreground)] font-bold">${user.balance.toLocaleString()}</span>
@@ -229,9 +338,27 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] text-sm">股</span>
                     </div>
+                    
+                    <div className="grid grid-cols-4 gap-2">
+                      {[25, 50, 75, 100].map(pct => (
+                        <button 
+                          key={pct}
+                          onClick={() => {
+                            const maxBuy = Math.floor(user.balance / (priceType === 'limit' ? limitPrice : selectedStock.price));
+                            setAmount(Math.floor(maxBuy * (pct / 100)));
+                          }}
+                          className="py-1.5 bg-[var(--muted)] hover:bg-[var(--border)] rounded-lg text-[10px] font-bold text-[var(--muted-foreground)] transition-all"
+                        >
+                          {pct}%
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="flex justify-between text-sm pt-2">
                       <span className="text-[var(--muted-foreground)]">预计总额</span>
-                      <span className="text-xl font-mono font-bold text-[var(--foreground)]">${(selectedStock.price * amount).toLocaleString()}</span>
+                      <span className="text-xl font-mono font-bold text-[var(--foreground)]">
+                        ${((priceType === 'limit' ? limitPrice : selectedStock.price) * amount).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
@@ -258,7 +385,7 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                   <Activity className="w-5 h-5 text-rose-500" /> 市场自选
                 </h4>
                 <div className="space-y-4">
-                  {stocks.map((stock: Stock) => (
+                  {stocks.slice(0, 10).map((stock: Stock) => (
                     <button 
                       key={stock.symbol}
                       onClick={() => setSelectedStock(stock)}
@@ -274,10 +401,10 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                         <p className="text-[10px] text-[var(--muted-foreground)]">{stock.name}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-sm text-[var(--foreground)]">${stock.price.toFixed(2)}</p>
+                        <p className="font-mono text-sm text-[var(--foreground)] font-bold">${stock.price.toFixed(2)}</p>
                         <p className={cn(
                           "text-[10px] font-bold",
-                          stock.change >= 0 ? "text-rose-500" : "text-emerald-500"
+                          stock.changePercent >= 0 ? "text-rose-500" : "text-emerald-500"
                         )}>
                           {stock.changePercent.toFixed(2)}%
                         </p>
@@ -332,6 +459,7 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                     <th className="pb-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">当前价</th>
                     <th className="pb-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">持仓市值</th>
                     <th className="pb-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">盈亏</th>
+                    <th className="pb-4 text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">操作</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
@@ -345,14 +473,43 @@ export default function Trade({ user, setUser, market }: TradeProps) {
                             <div className="w-10 h-10 rounded-xl bg-[var(--muted)] flex items-center justify-center font-bold text-rose-500">
                               {symbol[0]}
                             </div>
-                            <span className="font-bold text-[var(--foreground)]">{symbol}</span>
+                            <div>
+                              <p className="text-[10px] font-mono font-bold text-[var(--muted-foreground)]">{stock?.code}</p>
+                              <span className="font-bold text-[var(--foreground)]">{symbol}</span>
+                            </div>
                           </div>
                         </td>
                         <td className="py-6 font-mono text-[var(--muted-foreground)]">{amount}</td>
                         <td className="py-6 font-mono text-[var(--muted-foreground)]">${stock?.price.toFixed(2)}</td>
                         <td className="py-6 font-mono text-[var(--foreground)] font-bold">${marketValue.toLocaleString()}</td>
                         <td className="py-6">
-                          <span className="text-rose-500 font-bold">+12.4%</span>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-rose-500 font-bold">+12.4%</span>
+                              <button 
+                                onClick={() => navigate(`/lab?mode=pk&symbol=${symbol}&source=portfolio`)}
+                                className="p-1.5 hover:bg-amber-500/10 rounded text-amber-500 transition-colors"
+                                title="策略诊断"
+                              >
+                                <Zap className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="w-24 h-1 bg-[var(--muted)] rounded-full overflow-hidden">
+                              <div className="h-full bg-rose-500" style={{ width: '60%' }} />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-6">
+                          <button 
+                            onClick={() => {
+                              setSelectedStock(stock!);
+                              setAmount(amount);
+                              handleTrade('SELL');
+                            }}
+                            className="px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all"
+                          >
+                            快速卖出
+                          </button>
                         </td>
                       </tr>
                     );

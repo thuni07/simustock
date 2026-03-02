@@ -59,15 +59,34 @@ export default function AgentLab({ market }: AgentLabProps) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('simulator');
   const [isChallengeMode, setIsChallengeMode] = useState(false);
+  const [initialParams, setInitialParams] = useState<any>(null);
   const { agents, stocks, triggerShock } = market;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('mode') === 'challenge') {
+    const mode = params.get('mode');
+    const symbol = params.get('symbol');
+    const scenario = params.get('scenario');
+
+    if (mode === 'challenge') {
       setIsChallengeMode(true);
       setActiveTab('simulator');
+    } else if (mode === 'config') {
+      setActiveTab('simulator');
+      if (scenario === 'panic') {
+        setInitialParams({ panicLevel: 90, herdingBias: 80 });
+      }
+    } else if (mode === 'pk') {
+      setActiveTab('strategy');
     }
-  }, [location]);
+
+    if (symbol) {
+      const stock = stocks.find((s: any) => s.symbol === symbol);
+      if (stock) {
+        alert(`已为您加载个股数据：${stock.name} (${symbol})`);
+      }
+    }
+  }, [location, stocks]);
 
   const exitChallenge = () => {
     setIsChallengeMode(false);
@@ -140,7 +159,7 @@ export default function AgentLab({ market }: AgentLabProps) {
 
       <main className="min-h-[600px]">
         <AnimatePresence mode="wait">
-          {activeTab === 'simulator' && <SimulatorModule key="simulator" triggerShock={triggerShock} isChallenge={isChallengeMode} />}
+          {activeTab === 'simulator' && <SimulatorModule key="simulator" triggerShock={triggerShock} isChallenge={isChallengeMode} initialParams={initialParams} />}
           {activeTab === 'strategy' && <StrategyModule key="strategy" />}
           {activeTab === 'visualization' && <VisualizationModule key="visualization" agents={agents} />}
           {activeTab === 'training' && <TrainingModule key="training" />}
@@ -152,7 +171,8 @@ export default function AgentLab({ market }: AgentLabProps) {
 }
 
 // --- Module 1: Market Shock Simulator ---
-function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isChallenge?: boolean }) {
+function SimulatorModule({ triggerShock, isChallenge, initialParams }: { triggerShock: any, isChallenge?: boolean, initialParams?: any }) {
+  const navigate = useNavigate();
   const [params, setParams] = useState({
     policyIntensity: 50,
     eventImpact: 30,
@@ -168,22 +188,50 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
   useEffect(() => {
     if (isChallenge) {
       setParams(prev => ({ ...prev, herdingBias: 90 }));
+    } else if (initialParams) {
+      setParams(prev => ({ ...prev, ...initialParams }));
     }
-  }, [isChallenge]);
+  }, [isChallenge, initialParams]);
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  const [compareResults, setCompareResults] = useState<any[] | null>(null);
+  const [isCompareMode, setIsCompareMode] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const presets = [
+    { name: '金融危机', icon: ShieldAlert, params: { panicLevel: 90, herdingBias: 95, retailRatio: 80, contagionSpeed: 90 } },
+    { name: '政策利好', icon: TrendingUp, params: { policyIntensity: 90, panicLevel: 5, herdingBias: 70, retailRatio: 40 } },
+    { name: '流动性枯竭', icon: AlertTriangle, params: { duration: 90, panicLevel: 70, contagionSpeed: 80, instRatio: 10 } },
+  ];
 
   const runSimulation = () => {
     setIsSimulating(true);
-    // Simulate data generation
+    setProgress(0);
+    
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 50);
+
     setTimeout(() => {
       const newData = Array.from({ length: 30 }).map((_, i) => ({
         time: i,
         price: 3800 + Math.random() * 200 - (params.panicLevel * 2),
         sentiment: 50 + Math.random() * 20 - (params.contagionSpeed / 2)
       }));
-      setResults(newData);
+      
+      if (isCompareMode) {
+        setCompareResults(newData);
+      } else {
+        setResults(newData);
+      }
+      
       setIsSimulating(false);
       triggerShock('Simulated', -params.panicLevel / 100, 'Custom lab simulation');
     }, 1500);
@@ -197,10 +245,23 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       {/* Parameters Panel */}
-      <div className="lg:col-span-1 space-y-6 bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+      <div className="lg:col-span-1 space-y-6 bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
         <div className="flex items-center gap-3 mb-4">
           <Settings2 className="w-5 h-5 text-rose-400" />
-          <h3 className="text-xl font-bold text-white">模拟参数配置</h3>
+          <h3 className="text-xl font-bold text-[var(--foreground)]">模拟参数配置</h3>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-6">
+          {presets.map(p => (
+            <button 
+              key={p.name}
+              onClick={() => setParams({ ...params, ...p.params })}
+              className="flex flex-col items-center gap-1 p-2 bg-[var(--muted)] border border-[var(--border)] rounded-xl hover:border-rose-500/50 transition-all group"
+            >
+              <p.icon className="w-4 h-4 text-[var(--muted-foreground)] group-hover:text-rose-500" />
+              <span className="text-[8px] font-bold text-[var(--muted-foreground)]">{p.name}</span>
+            </button>
+          ))}
         </div>
 
         <div className="space-y-6">
@@ -233,21 +294,52 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
         <button 
           onClick={runSimulation}
           disabled={isSimulating}
-          className="w-full bg-rose-500 hover:bg-rose-400 disabled:bg-rose-500/50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-rose-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+          className="w-full bg-rose-500 hover:bg-rose-400 disabled:bg-rose-500/50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-rose-500/20 transition-all active:scale-95 flex flex-col items-center justify-center gap-1"
         >
-          {isSimulating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
-          {isSimulating ? '模拟运行中...' : '开始模拟'}
+          <div className="flex items-center gap-2">
+            {isSimulating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
+            {isSimulating ? '模拟运行中...' : '开始模拟'}
+          </div>
+          {isSimulating && (
+            <div className="w-32 h-1 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-full bg-white transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+          )}
         </button>
+        
+        <div className="flex items-center justify-between pt-4">
+          <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">对比模式 (A/B Test)</span>
+          <button 
+            onClick={() => setIsCompareMode(!isCompareMode)}
+            className={cn(
+              "w-10 h-5 rounded-full transition-all relative",
+              isCompareMode ? "bg-rose-500" : "bg-[var(--muted)]"
+            )}
+          >
+            <div className={cn(
+              "absolute top-1 w-3 h-3 bg-white rounded-full transition-all",
+              isCompareMode ? "left-6" : "left-1"
+            )} />
+          </button>
+        </div>
       </div>
 
       {/* Results Panel */}
       <div className="lg:col-span-2 space-y-8">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 min-h-[400px]">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8 min-h-[400px]">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-white">价格走势模拟 (K线/分时)</h3>
+            <h3 className="text-xl font-bold text-[var(--foreground)]">价格走势模拟 (K线/分时)</h3>
             <div className="flex gap-2">
-              <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400"><Save className="w-4 h-4" /></button>
-              <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400"><Share2 className="w-4 h-4" /></button>
+              {results.length > 0 && (
+                <button 
+                  onClick={() => navigate('/market?tab=A股&impact=simulated')}
+                  className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-500 rounded-xl text-xs font-bold hover:bg-rose-500/20 transition-all"
+                >
+                  <BarChart3 className="w-4 h-4" /> 查看受影响个股
+                </button>
+              )}
+              <button className="p-2 rounded-lg bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--muted-foreground)]"><Save className="w-4 h-4" /></button>
+              <button className="p-2 rounded-lg bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--muted-foreground)]"><Share2 className="w-4 h-4" /></button>
             </div>
           </div>
 
@@ -265,10 +357,31 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
                   <XAxis dataKey="time" hide />
                   <YAxis domain={['auto', 'auto']} hide />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#0F0F12', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }}
                     itemStyle={{ color: '#f43f5e' }}
                   />
-                  <Area type="monotone" dataKey="price" stroke="#f43f5e" fillOpacity={1} fill="url(#colorPrice)" strokeWidth={2} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="price" 
+                    stroke="#f43f5e" 
+                    fillOpacity={1} 
+                    fill="url(#colorPrice)" 
+                    strokeWidth={2} 
+                    name="方案 A"
+                  />
+                  {isCompareMode && compareResults && (
+                    <Area 
+                      type="monotone" 
+                      dataKey="price" 
+                      data={compareResults}
+                      stroke="#6366f1" 
+                      fill="#6366f1" 
+                      fillOpacity={0.1} 
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      name="方案 B"
+                    />
+                  )}
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -287,8 +400,8 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
           <MetricCard label="羊群爆发点" value="T+18" color="text-rose-400" />
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">情绪演化热图</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">情绪演化热图</h3>
           <div className="h-24 bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 rounded-2xl relative overflow-hidden">
              <motion.div 
               animate={{ x: ['0%', '100%', '0%'] }}
@@ -309,8 +422,27 @@ function SimulatorModule({ triggerShock, isChallenge }: { triggerShock: any, isC
 
 // --- Module 2: Strategy Confrontation ---
 function StrategyModule() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'simple' | 'code'>('simple');
   const [opponent, setOpponent] = useState('retail');
+  const [isPKRunning, setIsPKRunning] = useState(false);
+
+  const handlePK = () => {
+    setIsPKRunning(true);
+    setTimeout(() => {
+      setIsPKRunning(false);
+      const win = Math.random() > 0.3;
+      if (win) {
+        if (confirm('对抗 PK 完成！\n最终收益率：+12.4%\n智能体收益率：+8.2%\n恭喜，你的策略战胜了智能体！\n是否立即应用此策略到模拟交易？')) {
+          navigate('/trade?source=strategy_win');
+        }
+      } else {
+        if (confirm('对抗失败！\n你的策略在极端行情下表现不佳。\n是否返回配置页调整参数重新模拟？')) {
+          navigate('/lab?mode=config&failure=strategy');
+        }
+      }
+    }, 2000);
+  };
 
   const opponents = [
     { id: 'retail', name: '散户智能体', desc: '容易恐慌和追涨', difficulty: 2 },
@@ -326,39 +458,45 @@ function StrategyModule() {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
               <Code className="w-5 h-5 text-rose-400" /> 策略构建器
             </h3>
-            <div className="flex bg-white/5 p-1 rounded-xl">
+            <div className="flex bg-[var(--muted)] p-1 rounded-xl">
               <button 
                 onClick={() => setMode('simple')}
-                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'simple' ? "bg-rose-500 text-white" : "text-slate-500")}
+                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'simple' ? "bg-rose-500 text-white" : "text-[var(--muted-foreground)]")}
               >简易模式</button>
               <button 
                 onClick={() => setMode('code')}
-                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'code' ? "bg-rose-500 text-white" : "text-slate-500")}
+                className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all", mode === 'code' ? "bg-rose-500 text-white" : "text-[var(--muted-foreground)]")}
               >代码模式</button>
             </div>
           </div>
 
           {mode === 'simple' ? (
             <div className="space-y-4">
-              <div className="p-6 bg-white/5 border border-dashed border-white/10 rounded-2xl">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-4">买入条件 (Buy Conditions)</p>
+              <div className="p-6 bg-[var(--muted)] border border-dashed border-[var(--border)] rounded-2xl">
+                <p className="text-xs font-bold text-[var(--muted-foreground)] uppercase mb-4">买入条件 (Buy Conditions)</p>
                 <div className="flex flex-wrap gap-3">
-                  <StrategyBlock label="恐慌指数 > 70" color="bg-emerald-500/20 text-emerald-400" />
-                  <StrategyBlock label="买入 10% 仓位" color="bg-rose-500/20 text-rose-400" />
-                  <button className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center text-slate-500 hover:text-white hover:border-white/40">+</button>
+                  <StrategyBlock label="恐慌指数 > 70" color="bg-emerald-500/20 text-emerald-500" />
+                  <StrategyBlock label="买入 10% 仓位" color="bg-rose-500/20 text-rose-500" />
+                  <button 
+                    onClick={() => alert('添加自定义买入条件（开发中）')}
+                    className="w-8 h-8 rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--muted-foreground)] transition-colors"
+                  >+</button>
                 </div>
               </div>
-              <div className="p-6 bg-white/5 border border-dashed border-white/10 rounded-2xl">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-4">卖出条件 (Sell Conditions)</p>
+              <div className="p-6 bg-[var(--muted)] border border-dashed border-[var(--border)] rounded-2xl">
+                <p className="text-xs font-bold text-[var(--muted-foreground)] uppercase mb-4">卖出条件 (Sell Conditions)</p>
                 <div className="flex flex-wrap gap-3">
-                  <StrategyBlock label="收益率达到 15%" color="bg-rose-500/20 text-rose-400" />
-                  <StrategyBlock label="止盈卖出" color="bg-amber-500/20 text-amber-400" />
-                  <button className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center text-slate-500 hover:text-white hover:border-white/40">+</button>
+                  <StrategyBlock label="收益率达到 15%" color="bg-rose-500/20 text-rose-500" />
+                  <StrategyBlock label="止盈卖出" color="bg-amber-500/20 text-amber-500" />
+                  <button 
+                    onClick={() => alert('添加自定义卖出条件（开发中）')}
+                    className="w-8 h-8 rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--muted-foreground)] transition-colors"
+                  >+</button>
                 </div>
               </div>
             </div>
@@ -377,8 +515,8 @@ function StrategyModule() {
           )}
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">收益率对比 (用户 vs 智能体)</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">收益率对比 (用户 vs 智能体)</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={Array.from({ length: 20 }).map((_, i) => ({
@@ -386,10 +524,10 @@ function StrategyModule() {
                 user: 100 + i * 2 + Math.random() * 5,
                 agent: 100 + i * 1.5 + Math.random() * 8
               }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
                 <XAxis dataKey="name" hide />
                 <YAxis hide />
-                <Tooltip contentStyle={{ backgroundColor: '#0F0F12', border: 'none', borderRadius: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }} />
                 <Line type="monotone" dataKey="user" stroke="#f43f5e" strokeWidth={3} dot={false} name="用户策略" />
                 <Line type="monotone" dataKey="agent" stroke="#6366f1" strokeWidth={3} dot={false} name="智能体策略" />
               </LineChart>
@@ -399,8 +537,8 @@ function StrategyModule() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">选择对抗对手</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">选择对抗对手</h3>
           <div className="space-y-4">
             {opponents.map((op) => (
               <button 
@@ -408,34 +546,38 @@ function StrategyModule() {
                 onClick={() => setOpponent(op.id)}
                 className={cn(
                   "w-full p-4 rounded-2xl border text-left transition-all group",
-                  opponent === op.id ? "bg-rose-500/10 border-rose-500/50" : "bg-white/5 border-transparent hover:border-white/10"
+                  opponent === op.id ? "bg-rose-500/10 border-rose-500/50" : "bg-[var(--muted)] border-transparent hover:border-[var(--border)]"
                 )}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className={cn("font-bold", opponent === op.id ? "text-rose-400" : "text-white")}>{op.name}</span>
+                  <span className={cn("font-bold", opponent === op.id ? "text-rose-500" : "text-[var(--foreground)]")}>{op.name}</span>
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full", i < op.difficulty ? "bg-amber-400" : "bg-white/10")} />
+                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full", i < op.difficulty ? "bg-amber-400" : "bg-[var(--border)]")} />
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-slate-500">{op.desc}</p>
+                <p className="text-xs text-[var(--muted-foreground)]">{op.desc}</p>
               </button>
             ))}
           </div>
-          <button className="w-full mt-8 bg-white text-black font-bold py-4 rounded-2xl hover:bg-slate-200 transition-all active:scale-95">
-            开始对抗 PK
+          <button 
+            onClick={handlePK}
+            disabled={isPKRunning}
+            className="w-full mt-8 bg-[var(--foreground)] text-[var(--background)] font-bold py-4 rounded-2xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
+          >
+            {isPKRunning ? '正在模拟对抗...' : '开始对抗 PK'}
           </button>
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">行为分析报告</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">行为分析报告</h3>
           <div className="space-y-4">
             <AnalysisItem label="胜率" value="65%" />
             <AnalysisItem label="盈亏比" value="1.82" />
             <AnalysisItem label="最大回撤" value="12.4%" />
-            <div className="pt-4 border-t border-white/5">
-              <p className="text-xs text-slate-500 italic">
+            <div className="pt-4 border-t border-[var(--border)]">
+              <p className="text-xs text-[var(--muted-foreground)] italic">
                 “你在 T+12 时刻表现出了明显的恐慌抛售倾向，而智能体在该点位选择了逆向买入。”
               </p>
             </div>
@@ -467,16 +609,16 @@ function VisualizationModule({ agents }: { agents: any[] }) {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[3rem] p-8 relative overflow-hidden min-h-[500px]">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[3rem] p-8 relative overflow-hidden min-h-[500px]">
           <div className="absolute top-8 left-8 z-10">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
               <Users className="w-5 h-5 text-rose-400" /> 智能体广场
             </h3>
-            <p className="text-xs text-slate-500">实时可视化群体情绪演化</p>
+            <p className="text-xs text-[var(--muted-foreground)]">实时可视化群体情绪演化</p>
           </div>
 
           <div className="absolute top-8 right-8 z-10 flex gap-2">
-            <div className="flex items-center gap-4 bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+            <div className="flex items-center gap-4 bg-[var(--muted)]/80 backdrop-blur-md px-4 py-2 rounded-xl border border-[var(--border)]">
               <LegendItem color="bg-emerald-500" label="恐慌抛售" />
               <LegendItem color="bg-rose-500" label="贪婪买入" />
               <LegendItem color="bg-blue-500" label="观望中" />
@@ -517,20 +659,20 @@ function VisualizationModule({ agents }: { agents: any[] }) {
             ))}
           </div>
 
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-6 bg-black/60 backdrop-blur-xl px-8 py-4 rounded-3xl border border-white/10">
-            <button onClick={() => setIsPlaying(!isPlaying)} className="text-white hover:text-rose-400 transition-colors">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-6 bg-[var(--card)]/80 backdrop-blur-xl px-8 py-4 rounded-3xl border border-[var(--border)]">
+            <button onClick={() => setIsPlaying(!isPlaying)} className="text-[var(--foreground)] hover:text-rose-500 transition-colors">
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
             </button>
-            <div className="w-64 h-1 bg-white/10 rounded-full relative">
+            <div className="w-64 h-1 bg-[var(--muted)] rounded-full relative">
               <div className="absolute inset-y-0 left-0 w-1/3 bg-rose-500 rounded-full" />
-              <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg" />
+              <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-3 h-3 bg-[var(--foreground)] rounded-full shadow-lg" />
             </div>
-            <span className="text-[10px] font-mono text-slate-400">T+18 / T+30</span>
+            <span className="text-[10px] font-mono text-[var(--muted-foreground)]">T+18 / T+30</span>
           </div>
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">群体行为回放</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">群体行为回放</h3>
           <div className="space-y-4">
             <TimelineItem time="T+5" event="政策发布：利好信号注入" type="positive" />
             <TimelineItem time="T+12" event="情绪拐点：机构开始获利了结" type="neutral" />
@@ -540,21 +682,21 @@ function VisualizationModule({ agents }: { agents: any[] }) {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8 min-h-[400px]">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8 min-h-[400px]">
           <div className="flex items-center gap-3 mb-8">
             <Search className="w-5 h-5 text-rose-400" />
-            <h3 className="text-xl font-bold text-white">单个智能体探针</h3>
+            <h3 className="text-xl font-bold text-[var(--foreground)]">单个智能体探针</h3>
           </div>
 
           {selectedAgent ? (
             <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
-                <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
+              <div className="flex items-center gap-4 p-4 bg-[var(--muted)] rounded-2xl">
+                <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-500 font-bold">
                   #{selectedAgent.id}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">{selectedAgent.type}智能体</p>
-                  <p className="text-xs text-slate-500">ID: agent_v3_{selectedAgent.id}</p>
+                  <p className="text-sm font-bold text-[var(--foreground)]">{selectedAgent.type}智能体</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">ID: agent_v3_{selectedAgent.id}</p>
                 </div>
               </div>
 
@@ -565,9 +707,9 @@ function VisualizationModule({ agents }: { agents: any[] }) {
                 <ProbeStat label="最近操作" value={selectedAgent.lastAction} />
               </div>
 
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">决策逻辑 (Decision Logic)</p>
-                <p className="text-xs text-slate-400 leading-relaxed">
+              <div className="p-4 bg-[var(--muted)] rounded-2xl border border-[var(--border)]">
+                <p className="text-xs font-bold text-[var(--muted-foreground)] uppercase mb-2">决策逻辑 (Decision Logic)</p>
+                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
                   检测到周围 3 个邻近智能体正在进行抛售操作，且市场恐慌指数超过阈值 (0.65)，触发羊群效应模块，执行减仓指令。
                 </p>
               </div>
@@ -581,15 +723,15 @@ function VisualizationModule({ agents }: { agents: any[] }) {
                     { subject: '从众', A: 90, fullMark: 100 },
                     { subject: '风险', A: 60, fullMark: 100 },
                   ]}>
-                    <PolarGrid stroke="#ffffff10" />
-                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 10 }} />
+                    <PolarGrid stroke="var(--border)" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} />
                     <Radar name="Agent" dataKey="A" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.5} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-slate-600 text-center py-20">
+            <div className="h-full flex flex-col items-center justify-center text-[var(--muted-foreground)] text-center py-20">
               <MousePointer2 className="w-12 h-12 mb-4 opacity-20" />
               <p className="text-sm">点击广场中的圆点<br />查看智能体决策细节</p>
             </div>
@@ -624,17 +766,17 @@ function TrainingModule() {
       className="grid grid-cols-1 lg:grid-cols-3 gap-8"
     >
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
               <Activity className="w-5 h-5 text-rose-400" /> 训练实时可视化
             </h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-rose-400 uppercase">Training...</span>
+                <span className="text-[10px] font-bold text-rose-500 uppercase">Training...</span>
               </div>
-              <span className="text-[10px] font-mono text-slate-500">Epoch: 1,240 / 5,000</span>
+              <span className="text-[10px] font-mono text-[var(--muted-foreground)]">Epoch: 1,240 / 5,000</span>
             </div>
           </div>
 
@@ -645,10 +787,10 @@ function TrainingModule() {
                 reward: Math.log(i + 1) * 10 + Math.random() * 5,
                 loss: 100 / (i + 1) + Math.random() * 2
               }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
                 <XAxis dataKey="epoch" hide />
                 <YAxis hide />
-                <Tooltip contentStyle={{ backgroundColor: '#0F0F12', border: 'none', borderRadius: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px' }} />
                 <Area type="monotone" dataKey="reward" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.1} strokeWidth={2} name="累计奖励 (Reward)" />
                 <Area type="monotone" dataKey="loss" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.1} strokeWidth={2} name="损失函数 (Loss)" />
               </AreaChart>
@@ -656,26 +798,26 @@ function TrainingModule() {
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-8">
-            <div className="p-4 bg-white/5 rounded-2xl">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">策略收敛度</p>
+            <div className="p-4 bg-[var(--muted)] rounded-2xl">
+              <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mb-1">策略收敛度</p>
               <div className="flex items-end gap-2">
-                <span className="text-xl font-bold text-white">92.4%</span>
+                <span className="text-xl font-bold text-[var(--foreground)]">92.4%</span>
                 <TrendingUp className="w-4 h-4 text-rose-400 mb-1" />
               </div>
             </div>
-            <div className="p-4 bg-white/5 rounded-2xl">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">探索率 (Epsilon)</p>
-              <span className="text-xl font-bold text-white">0.05</span>
+            <div className="p-4 bg-[var(--muted)] rounded-2xl">
+              <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mb-1">探索率 (Epsilon)</p>
+              <span className="text-xl font-bold text-[var(--foreground)]">0.05</span>
             </div>
-            <div className="p-4 bg-white/5 rounded-2xl">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">平均步数</p>
-              <span className="text-xl font-bold text-white">420</span>
+            <div className="p-4 bg-[var(--muted)] rounded-2xl">
+              <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mb-1">平均步数</p>
+              <span className="text-xl font-bold text-[var(--foreground)]">420</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-white mb-6">模型库 (Model Zoo)</h3>
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">模型库 (Model Zoo)</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <ModelCard 
               name="PPO" 
@@ -700,10 +842,10 @@ function TrainingModule() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
           <div className="flex items-center gap-3 mb-8">
             <Settings2 className="w-5 h-5 text-rose-400" />
-            <h3 className="text-xl font-bold text-white">超参数调节</h3>
+            <h3 className="text-xl font-bold text-[var(--foreground)]">超参数调节</h3>
           </div>
 
           <div className="space-y-6">
@@ -717,19 +859,19 @@ function TrainingModule() {
             <button className="w-full bg-rose-500 text-white font-bold py-4 rounded-2xl hover:bg-rose-400 transition-all">
               保存并重新训练
             </button>
-            <button className="w-full bg-white/5 text-slate-400 font-bold py-4 rounded-2xl hover:bg-white/10 transition-all">
+            <button className="w-full bg-[var(--muted)] text-[var(--muted-foreground)] font-bold py-4 rounded-2xl hover:bg-[var(--border)] transition-all">
               导出模型文件 (.pth)
             </button>
           </div>
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
           <div className="flex items-center gap-3 mb-4">
             <Database className="w-5 h-5 text-rose-400" />
-            <h3 className="text-lg font-bold text-white">训练数据集</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)]">训练数据集</h3>
           </div>
-          <p className="text-xs text-slate-500 mb-4">当前使用：Simustock 300 历史波动数据 (2020-2025)</p>
-          <button className="text-xs font-bold text-rose-400 hover:underline">上传自定义数据集</button>
+          <p className="text-xs text-[var(--muted-foreground)] mb-4">当前使用：Simustock 300 历史波动数据 (2020-2025)</p>
+          <button className="text-xs font-bold text-rose-500 hover:underline">上传自定义数据集</button>
         </div>
       </div>
     </motion.div>
@@ -877,8 +1019,8 @@ function Slider({ label, value, onChange, disabled }: { label: string, value: nu
 
 function MetricCard({ label, value, color }: { label: string, value: string, color: string }) {
   return (
-    <div className="bg-[#0F0F12] border border-white/5 rounded-2xl p-4">
-      <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">{label}</p>
+    <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4">
+      <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mb-1">{label}</p>
       <p className={cn("text-lg font-bold", color)}>{value}</p>
     </div>
   );
@@ -886,7 +1028,7 @@ function MetricCard({ label, value, color }: { label: string, value: string, col
 
 function StrategyBlock({ label, color }: { label: string, color: string }) {
   return (
-    <div className={cn("px-4 py-2 rounded-xl text-xs font-bold border border-white/5", color)}>
+    <div className={cn("px-4 py-2 rounded-xl text-xs font-bold border border-[var(--border)]", color)}>
       {label}
     </div>
   );
@@ -895,8 +1037,8 @@ function StrategyBlock({ label, color }: { label: string, color: string }) {
 function AnalysisItem({ label, value }: { label: string, value: string }) {
   return (
     <div className="flex justify-between items-center text-sm">
-      <span className="text-slate-500">{label}</span>
-      <span className="text-white font-bold">{value}</span>
+      <span className="text-[var(--muted-foreground)]">{label}</span>
+      <span className="text-[var(--foreground)] font-bold">{value}</span>
     </div>
   );
 }
@@ -905,7 +1047,7 @@ function LegendItem({ color, label }: { color: string, label: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className={cn("w-2 h-2 rounded-full", color)} />
-      <span className="text-[10px] font-bold text-slate-400 uppercase">{label}</span>
+      <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">{label}</span>
     </div>
   );
 }
@@ -913,12 +1055,12 @@ function LegendItem({ color, label }: { color: string, label: string }) {
 function TimelineItem({ time, event, type }: { time: string, event: string, type: 'positive' | 'negative' | 'neutral' }) {
   return (
     <div className="flex gap-4 items-start">
-      <span className="text-xs font-mono text-slate-500 pt-1">{time}</span>
+      <span className="text-xs font-mono text-[var(--muted-foreground)] pt-1">{time}</span>
       <div className={cn(
         "flex-1 p-3 rounded-xl border text-xs",
-        type === 'positive' ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400" :
-        type === 'negative' ? "bg-rose-500/5 border-rose-500/10 text-rose-400" :
-        "bg-white/5 border-white/10 text-slate-300"
+        type === 'positive' ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-500" :
+        type === 'negative' ? "bg-rose-500/5 border-rose-500/10 text-rose-500" :
+        "bg-[var(--muted)] border-[var(--border)] text-[var(--foreground)]"
       )}>
         {event}
       </div>
@@ -929,8 +1071,8 @@ function TimelineItem({ time, event, type }: { time: string, event: string, type
 function ProbeStat({ label, value }: { label: string, value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-bold text-slate-500 uppercase mb-0.5">{label}</p>
-      <p className="text-sm font-bold text-white">{value}</p>
+      <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mb-0.5">{label}</p>
+      <p className="text-sm font-bold text-[var(--foreground)]">{value}</p>
     </div>
   );
 }
@@ -941,28 +1083,28 @@ function ModelCard({ name, desc, active, onClick }: { name: string, desc: string
       onClick={onClick}
       className={cn(
         "p-6 rounded-2xl border text-left transition-all",
-        active ? "bg-emerald-500/10 border-emerald-500/50" : "bg-white/5 border-transparent hover:border-white/10"
+        active ? "bg-emerald-500/10 border-emerald-500/50" : "bg-[var(--muted)] border-transparent hover:border-[var(--border)]"
       )}
     >
-      <h4 className={cn("font-bold mb-2", active ? "text-emerald-400" : "text-white")}>{name}</h4>
-      <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
+      <h4 className={cn("font-bold mb-2", active ? "text-emerald-500" : "text-[var(--foreground)]")}>{name}</h4>
+      <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{desc}</p>
     </button>
   );
 }
 
 function CaseCard({ title, author, stats, tags, impact }: { title: string, author: string, stats: any, tags: string[], impact: string }) {
   return (
-    <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-6 hover:border-white/20 transition-all group cursor-pointer">
+    <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 hover:border-rose-500/30 transition-all group cursor-pointer">
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-2">
           {tags.map(tag => (
-            <span key={tag} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-bold text-slate-500 uppercase">{tag}</span>
+            <span key={tag} className="px-2 py-0.5 rounded-md bg-[var(--muted)] border border-[var(--border)] text-[8px] font-bold text-[var(--muted-foreground)] uppercase">{tag}</span>
           ))}
         </div>
-        <span className={cn("text-xs font-bold", impact.startsWith('-') ? "text-rose-400" : "text-emerald-400")}>{impact}</span>
+        <span className={cn("text-xs font-bold", impact.startsWith('-') ? "text-rose-500" : "text-emerald-500")}>{impact}</span>
       </div>
-      <h4 className="font-bold text-white mb-4 group-hover:text-emerald-400 transition-colors">{title}</h4>
-      <div className="flex justify-between items-center text-[10px] text-slate-500">
+      <h4 className="font-bold text-[var(--foreground)] mb-4 group-hover:text-rose-500 transition-colors">{title}</h4>
+      <div className="flex justify-between items-center text-[10px] text-[var(--muted-foreground)]">
         <span>By {author}</span>
         <div className="flex gap-3">
           <span>{stats.views} 浏览</span>
@@ -975,13 +1117,13 @@ function CaseCard({ title, author, stats, tags, impact }: { title: string, autho
 
 function TeachingCase({ title, desc }: { title: string, desc: string }) {
   return (
-    <div className="p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all cursor-pointer group">
+    <div className="p-4 bg-[var(--muted)] border border-[var(--border)] rounded-2xl hover:bg-[var(--border)] transition-all cursor-pointer group">
       <div className="flex justify-between items-center">
         <div>
-          <h4 className="font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{title}</h4>
-          <p className="text-xs text-slate-500">{desc}</p>
+          <h4 className="font-bold text-[var(--foreground)] mb-1 group-hover:text-rose-500 transition-colors">{title}</h4>
+          <p className="text-xs text-[var(--muted-foreground)]">{desc}</p>
         </div>
-        <ChevronRight className="w-4 h-4 text-slate-700 group-hover:text-blue-400 transition-all" />
+        <ChevronRight className="w-4 h-4 text-[var(--muted-foreground)] group-hover:text-rose-500 transition-all" />
       </div>
     </div>
   );

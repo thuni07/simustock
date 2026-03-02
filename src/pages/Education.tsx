@@ -110,7 +110,10 @@ export default function Education({ user, setUser, market }: EducationProps) {
                 <span className="text-xs text-[var(--muted-foreground)] flex items-center gap-1"><Play className="w-3 h-3" /> {course.duration}</span>
                 <span className="text-xs text-[var(--muted-foreground)] flex items-center gap-1"><Users className="w-3 h-3" /> {course.students}</span>
               </div>
-              <button className="w-full py-3 bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--foreground)] font-bold rounded-xl border border-[var(--border)] transition-all">
+              <button 
+                onClick={() => alert(`正在加载课程：${course.title}`)}
+                className="w-full py-3 bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--foreground)] font-bold rounded-xl border border-[var(--border)] transition-all"
+              >
                 开始学习
               </button>
             </motion.div>
@@ -167,8 +170,15 @@ export default function Education({ user, setUser, market }: EducationProps) {
                       上一步
                     </button>
                     <button 
-                      onClick={() => setActiveStep(Math.min(trainingSteps.length - 1, activeStep + 1))}
-                      className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-rose-500/20"
+                      onClick={() => {
+                        if (activeStep === trainingSteps.length - 1) {
+                          alert('恭喜！你已完成互动训练营的所有课程。');
+                          setActiveTab('courses');
+                        } else {
+                          setActiveStep(Math.min(trainingSteps.length - 1, activeStep + 1));
+                        }
+                      }}
+                      className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-rose-500/20 active:scale-95"
                     >
                       {activeStep === trainingSteps.length - 1 ? '完成训练' : '下一步'}
                       <ChevronRight className="w-4 h-4" />

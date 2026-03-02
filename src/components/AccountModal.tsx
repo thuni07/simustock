@@ -48,9 +48,9 @@ export default function AccountModal({ user, isOpen, onClose }: AccountModalProp
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             className="relative w-full max-w-2xl bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] shadow-2xl overflow-hidden"
           >
             {/* Header */}
@@ -135,10 +135,10 @@ export default function AccountModal({ user, isOpen, onClose }: AccountModalProp
                 </section>
 
                 <section className="p-6 bg-rose-500/5 border border-rose-500/10 rounded-3xl">
-                  <h4 className="text-sm font-bold text-rose-400 mb-2 flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-rose-500 mb-2 flex items-center gap-2">
                     <Activity className="w-4 h-4" /> 行为画像
                   </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed italic">
+                  <p className="text-xs text-[var(--muted-foreground)] leading-relaxed italic">
                     "您的交易风格趋向于**理性稳健型**。在最近的 10 次模拟中，您成功识别了 3 次羊群效应陷阱，展现了极强的独立思考能力。"
                   </p>
                   <button className="mt-4 text-[10px] font-bold text-rose-500 flex items-center gap-1 hover:text-rose-400 transition-colors">

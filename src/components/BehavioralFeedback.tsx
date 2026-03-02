@@ -61,9 +61,9 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
   const insights = analyzeBehavior();
 
   return (
-    <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-6">
-      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <ShieldCheck className="w-5 h-5 text-rose-400" />
+    <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 transition-colors duration-300">
+      <h3 className="text-lg font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+        <ShieldCheck className="w-5 h-5 text-rose-500" />
         行为反馈 (Behavioral Feedback)
       </h3>
       <div className="space-y-3">
@@ -79,20 +79,20 @@ export default function BehavioralFeedback({ user }: BehavioralFeedbackProps) {
           >
             <insight.icon className={cn(
               "w-5 h-5 mt-0.5",
-              insight.type === 'positive' ? "text-rose-400" : "text-amber-400"
+              insight.type === 'positive' ? "text-rose-500" : "text-amber-500"
             )} />
             <p className={cn(
               "text-sm font-medium",
-              insight.type === 'positive' ? "text-rose-100" : "text-amber-100"
+              insight.type === 'positive' ? "text-[var(--foreground)]" : "text-amber-600 dark:text-amber-400"
             )}>
               {insight.text}
             </p>
           </motion.div>
         ))}
       </div>
-      <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/5">
-        <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pro Tip</p>
-        <p className="text-xs text-slate-400 italic">
+      <div className="mt-6 p-4 bg-[var(--muted)] rounded-2xl border border-[var(--border)]">
+        <p className="text-[10px] text-[var(--muted-foreground)] uppercase font-bold mb-1">Pro Tip</p>
+        <p className="text-xs text-[var(--muted-foreground)] italic">
           "The investor's chief problem—and even his worst enemy—is likely to be himself." — Benjamin Graham
         </p>
       </div>

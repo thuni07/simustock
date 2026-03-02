@@ -182,7 +182,10 @@ export default function Community({ user, setUser }: CommunityProps) {
                     <p className="text-xs text-[var(--muted-foreground)]">{post.time}</p>
                   </div>
                 </div>
-                <button className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
+                <button 
+                  onClick={() => alert('分享功能开发中...')}
+                  className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                >
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>
@@ -245,15 +248,15 @@ export default function Community({ user, setUser }: CommunityProps) {
                   <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-3 pt-4 border-t border-white/5"
+                    className="space-y-3 pt-4 border-t border-[var(--border)]"
                   >
                     {post.comments.map((comment, cIdx) => (
-                      <div key={cIdx} className="bg-white/5 rounded-xl p-3 border border-white/5">
+                      <div key={cIdx} className="bg-[var(--muted)] rounded-xl p-3 border border-[var(--border)]">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-bold text-rose-400">{comment.user}</span>
-                          <span className="text-[10px] text-slate-600">{comment.time}</span>
+                          <span className="text-xs font-bold text-rose-500">{comment.user}</span>
+                          <span className="text-[10px] text-[var(--muted-foreground)]">{comment.time}</span>
                         </div>
-                        <p className="text-sm text-slate-300">{comment.content}</p>
+                        <p className="text-sm text-[var(--muted-foreground)]">{comment.content}</p>
                       </div>
                     ))}
                   </motion.div>
@@ -270,10 +273,10 @@ export default function Community({ user, setUser }: CommunityProps) {
           <div className="absolute -top-4 -right-4 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all" />
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="w-6 h-6 text-rose-500" />
-            <h3 className="text-lg font-bold text-white">本周挑战赛</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)]">本周挑战赛</h3>
           </div>
-          <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-            <span className="text-white font-bold block mb-1">极度恐慌中的生还者</span>
+          <p className="text-sm text-[var(--muted-foreground)] mb-6 leading-relaxed">
+            <span className="text-[var(--foreground)] font-bold block mb-1">极度恐慌中的生还者</span>
             在羊群效应强度 90% 的极端环境下，实现 10% 以上的超额收益。
           </p>
           <NavLink 
@@ -285,53 +288,60 @@ export default function Community({ user, setUser }: CommunityProps) {
         </div>
 
         {/* Leaderboard */}
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6 flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-500" />
             挑战赛排行榜
           </h3>
           <div className="space-y-4">
             {leaderboard.map((userItem) => (
-              <div key={userItem.rank} className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/5">
+              <div key={userItem.rank} className="flex items-center justify-between p-3 bg-[var(--muted)] rounded-2xl border border-[var(--border)]">
                 <div className="flex items-center gap-3">
                   <span className={cn(
                     "w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold",
-                    userItem.rank === 1 ? "bg-amber-500 text-black" : "bg-white/10 text-slate-400"
+                    userItem.rank === 1 ? "bg-amber-500 text-black" : "bg-[var(--border)] text-[var(--muted-foreground)]"
                   )}>
                     {userItem.rank}
                   </span>
                   <button 
                     onClick={() => setSelectedUser({ name: userItem.name, avatar: userItem.avatar, id: userItem.id })}
-                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-slate-300 hover:bg-white/20 transition-colors"
+                    className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-xs font-bold text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors"
                   >
                     {userItem.avatar}
                   </button>
                   <span 
-                    className="text-sm font-bold text-white hover:text-rose-400 cursor-pointer transition-colors"
+                    className="text-sm font-bold text-[var(--foreground)] hover:text-rose-500 cursor-pointer transition-colors"
                     onClick={() => setSelectedUser({ name: userItem.name, avatar: userItem.avatar, id: userItem.id })}
                   >
                     {userItem.name}
                   </span>
                 </div>
-                <span className="text-sm font-mono font-bold text-rose-400">{userItem.score}</span>
+                <span className="text-sm font-mono font-bold text-rose-500">{userItem.score}</span>
               </div>
             ))}
           </div>
-          <button className="w-full mt-6 py-2 text-xs font-bold text-slate-500 hover:text-white transition-colors">
+          <button 
+            onClick={() => alert('查看完整榜单功能开发中...')}
+            className="w-full mt-6 py-2 text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+          >
             查看完整榜单
           </button>
         </div>
 
-        <div className="bg-[#0F0F12] border border-white/5 rounded-[2rem] p-8">
-          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-8">
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6 flex items-center gap-2">
             <Flame className="w-5 h-5 text-orange-500" />
             热门话题
           </h3>
           <div className="space-y-4">
             {['#黑天鹅模拟挑战', '#我的首笔模拟收益', '#智能体实验室调参', '#行为金融学入门'].map(topic => (
-              <div key={topic} className="flex justify-between items-center group cursor-pointer">
-                <span className="text-sm text-slate-400 group-hover:text-rose-400 transition-colors">{topic}</span>
-                <TrendingUp className="w-4 h-4 text-slate-700 group-hover:text-rose-400 transition-colors" />
+              <div 
+                key={topic} 
+                onClick={() => alert(`正在跳转到话题：${topic}`)}
+                className="flex justify-between items-center group cursor-pointer"
+              >
+                <span className="text-sm text-[var(--muted-foreground)] group-hover:text-rose-500 transition-colors">{topic}</span>
+                <TrendingUp className="w-4 h-4 text-[var(--muted-foreground)] opacity-30 group-hover:text-rose-500 transition-colors" />
               </div>
             ))}
           </div>
@@ -341,12 +351,12 @@ export default function Community({ user, setUser }: CommunityProps) {
       {/* User Profile Modal */}
       <AnimatePresence>
         {selectedUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-[#0F0F12] border border-white/10 rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl"
+              className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl"
             >
               <div className="h-24 bg-gradient-to-r from-rose-500/20 to-orange-500/20 relative">
                 <button 
@@ -358,21 +368,21 @@ export default function Community({ user, setUser }: CommunityProps) {
               </div>
               
               <div className="px-8 pb-8 -mt-12 flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-rose-500 to-orange-400 border-4 border-[#0F0F12] flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-xl">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-rose-500 to-orange-400 border-4 border-[var(--card)] flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-xl">
                   {selectedUser.avatar}
                 </div>
                 
-                <h3 className="text-xl font-bold text-white mb-1">{selectedUser.name}</h3>
-                <p className="text-xs text-slate-500 mb-6 uppercase tracking-widest font-bold">ID: {selectedUser.id}</p>
+                <h3 className="text-xl font-bold text-[var(--foreground)] mb-1">{selectedUser.name}</h3>
+                <p className="text-xs text-[var(--muted-foreground)] mb-6 uppercase tracking-widest font-bold">ID: {selectedUser.id}</p>
                 
                 <div className="grid grid-cols-2 gap-4 w-full mb-8">
-                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">关注者</p>
-                    <p className="text-lg font-bold text-white">1.2k</p>
+                  <div className="bg-[var(--muted)] rounded-2xl p-4 border border-[var(--border)] text-center">
+                    <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider mb-1">关注者</p>
+                    <p className="text-lg font-bold text-[var(--foreground)]">1.2k</p>
                   </div>
-                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">收益率</p>
-                    <p className="text-lg font-bold text-rose-400">+15.4%</p>
+                  <div className="bg-[var(--muted)] rounded-2xl p-4 border border-[var(--border)] text-center">
+                    <p className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider mb-1">收益率</p>
+                    <p className="text-lg font-bold text-rose-500">+15.4%</p>
                   </div>
                 </div>
                 
@@ -382,7 +392,7 @@ export default function Community({ user, setUser }: CommunityProps) {
                     className={cn(
                       "flex-1 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2",
                       isFollowing(selectedUser.id)
-                        ? "bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10"
+                        ? "bg-[var(--muted)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--border)]"
                         : "bg-rose-500 hover:bg-rose-400 text-white shadow-lg shadow-rose-500/20"
                     )}
                   >
@@ -398,7 +408,7 @@ export default function Community({ user, setUser }: CommunityProps) {
                   </button>
                   <button 
                     onClick={() => setIsMessageModalOpen(true)}
-                    className="p-3 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                    className="p-3 bg-[var(--muted)] border border-[var(--border)] rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--border)] transition-all"
                   >
                     <Mail className="w-5 h-5" />
                   </button>
@@ -412,21 +422,21 @@ export default function Community({ user, setUser }: CommunityProps) {
       {/* Message Modal */}
       <AnimatePresence>
         {isMessageModalOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="bg-[#0F0F12] border border-white/10 rounded-[2rem] w-full max-w-md p-8 shadow-2xl"
+              className="bg-[var(--card)] border border-[var(--border)] rounded-[2rem] w-full max-w-md p-8 shadow-2xl"
             >
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-rose-400" />
+                <h3 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-rose-500" />
                   写留言给 {selectedUser?.name}
                 </h3>
                 <button 
                   onClick={() => setIsMessageModalOpen(false)}
-                  className="text-slate-500 hover:text-white transition-colors"
+                  className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -436,13 +446,13 @@ export default function Community({ user, setUser }: CommunityProps) {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="输入您的留言内容..."
-                className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition-all mb-6 resize-none"
+                className="w-full h-32 bg-[var(--muted)] border border-[var(--border)] rounded-xl p-4 text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition-all mb-6 resize-none"
               />
               
               <div className="flex gap-3">
                 <button 
                   onClick={() => setIsMessageModalOpen(false)}
-                  className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-slate-400 hover:bg-white/10 transition-all"
+                  className="flex-1 py-3 bg-[var(--muted)] border border-[var(--border)] rounded-xl font-bold text-[var(--muted-foreground)] hover:bg-[var(--border)] transition-all"
                 >
                   取消
                 </button>

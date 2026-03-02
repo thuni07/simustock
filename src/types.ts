@@ -1,6 +1,8 @@
 export interface Stock {
   symbol: string;
+  code: string;
   name: string;
+  sector: string;
   price: number;
   change: number;
   changePercent: number;
@@ -9,6 +11,8 @@ export interface Stock {
   panicIndex: number; // 0-100
   herdingIntensity: number; // 0-100
   sentiment: number; // -1 to 1
+  peRatio?: number;
+  pbRatio?: number;
 }
 
 export interface PricePoint {

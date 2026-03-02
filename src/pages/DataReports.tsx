@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   FileText, 
@@ -8,10 +9,28 @@ import {
   PieChart, 
   TrendingUp,
   Clock,
-  Database
+  Database,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function DataReports() {
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState<number | null>(null);
+
+  const handleAction = (idx: number, type: 'preview' | 'download') => {
+    setLoading(idx);
+    setTimeout(() => {
+      setLoading(null);
+      alert(`${type === 'preview' ? '正在生成预览...' : '正在准备下载...'} \n报告：${reports[idx].title}`);
+    }, 1000);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
   const reports = [
     { 
       title: '2026 Q1 MAS市场波动深度报告', 
@@ -84,11 +103,19 @@ export default function DataReports() {
                 {report.type}
               </span>
               <div className="flex gap-4">
-                <button className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1 text-xs font-bold">
-                  <Eye className="w-4 h-4" /> 预览
+                <button 
+                  onClick={() => handleAction(idx, 'preview')}
+                  disabled={loading === idx}
+                  className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-50 transition-colors flex items-center gap-1 text-xs font-bold"
+                >
+                  <Eye className="w-4 h-4" /> {loading === idx ? '处理中...' : '预览'}
                 </button>
-                <button className="text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1 text-xs font-bold">
-                  <Download className="w-4 h-4" /> 下载
+                <button 
+                  onClick={() => handleAction(idx, 'download')}
+                  disabled={loading === idx}
+                  className="text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-colors flex items-center gap-1 text-xs font-bold"
+                >
+                  <Download className="w-4 h-4" /> {loading === idx ? '处理中...' : '下载'}
                 </button>
               </div>
             </div>
@@ -124,16 +151,30 @@ export default function DataReports() {
           </div>
           <div className="bg-[var(--muted)] rounded-[2rem] p-8 border border-[var(--border)]">
             <h4 className="text-[var(--foreground)] font-bold mb-4">快速申请</h4>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">机构名称</label>
-                <input type="text" className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm focus:border-rose-500 outline-none transition-colors" placeholder="输入您的机构或团队名称" />
-              </div>
-              <button className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-rose-500/20">
-                提交申请
-              </button>
-              <p className="text-[10px] text-[var(--muted-foreground)] text-center">提交后我们的技术团队将在 24 小时内与您联系</p>
-            </div>
+            {submitted ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center py-8 text-center"
+              >
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                </div>
+                <h5 className="font-bold text-[var(--foreground)] mb-2">申请已提交</h5>
+                <p className="text-xs text-[var(--muted-foreground)]">我们的技术团队将在 24 小时内与您联系</p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">机构名称</label>
+                  <input required type="text" className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm focus:border-rose-500 outline-none transition-colors" placeholder="输入您的机构或团队名称" />
+                </div>
+                <button type="submit" className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-rose-500/20 active:scale-95">
+                  提交申请
+                </button>
+                <p className="text-[10px] text-[var(--muted-foreground)] text-center">提交后我们的技术团队将在 24 小时内与您联系</p>
+              </form>
+            )}
           </div>
         </div>
       </div>

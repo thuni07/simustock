@@ -24,7 +24,7 @@ export default function MemberCenter() {
       ],
       isPopular: false,
       buttonText: '当前版本',
-      buttonClass: 'bg-white/5 text-slate-400 cursor-default'
+      buttonClass: 'bg-[var(--muted)] text-[var(--muted-foreground)] cursor-default'
     },
     {
       name: '专业版',
@@ -54,18 +54,18 @@ export default function MemberCenter() {
       ],
       isPopular: false,
       buttonText: '咨询详情',
-      buttonClass: 'bg-white/10 hover:bg-white/20 text-white'
+      buttonClass: 'bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--foreground)]'
     }
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-12">
       <header className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-bold uppercase tracking-widest">
           <Crown className="w-4 h-4" /> Freemium 商业模式
         </div>
-        <h2 className="text-4xl font-bold text-white tracking-tight">选择适合您的计划</h2>
-        <p className="text-slate-500 max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold text-[var(--foreground)] tracking-tight">选择适合您的计划</h2>
+        <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
           从基础模拟到深度量化分析，Simustock 为您提供全方位的金融成长路径。
         </p>
       </header>
@@ -78,8 +78,8 @@ export default function MemberCenter() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
             className={cn(
-              "relative bg-[#0F0F12] border rounded-[2.5rem] p-10 flex flex-col h-full transition-all duration-300",
-              plan.isPopular ? "border-rose-500/50 shadow-2xl shadow-rose-500/10 scale-105 z-10" : "border-white/5 hover:border-white/10"
+              "relative bg-[var(--card)] border rounded-[2.5rem] p-10 flex flex-col h-full transition-all duration-300",
+              plan.isPopular ? "border-rose-500/50 shadow-2xl shadow-rose-500/10 scale-105 z-10" : "border-[var(--border)] hover:border-rose-500/30"
             )}
           >
             {plan.isPopular && (
@@ -89,56 +89,62 @@ export default function MemberCenter() {
             )}
 
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+              <h3 className="text-2xl font-bold text-[var(--foreground)] mb-2">{plan.name}</h3>
               <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-bold text-white">{plan.price}</span>
-                {plan.price.includes('¥') && <span className="text-slate-500 text-sm">/月</span>}
+                <span className="text-4xl font-bold text-[var(--foreground)]">{plan.price}</span>
+                {plan.price.includes('¥') && <span className="text-[var(--muted-foreground)] text-sm">/月</span>}
               </div>
-              <p className="text-sm text-slate-500 leading-relaxed">{plan.desc}</p>
+              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{plan.desc}</p>
             </div>
 
             <div className="flex-1 space-y-4 mb-10">
               {plan.features.map(feature => (
                 <div key={feature} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-rose-500/10 flex items-center justify-center mt-0.5">
-                    <Check className="w-3 h-3 text-rose-400" />
+                    <Check className="w-3 h-3 text-rose-500" />
                   </div>
-                  <span className="text-sm text-slate-300">{feature}</span>
+                  <span className="text-sm text-[var(--muted-foreground)]">{feature}</span>
                 </div>
               ))}
             </div>
 
-            <button className={cn(
-              "w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98]",
-              plan.buttonClass
-            )}>
+            <button 
+              onClick={() => {
+                if (plan.name === '基础版') return;
+                alert(`正在跳转到支付页面：${plan.name}\n价格：${plan.price}`);
+              }}
+              className={cn(
+                "w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98]",
+                plan.buttonClass
+              )}
+            >
               {plan.buttonText}
             </button>
           </motion.div>
         ))}
       </div>
 
-      <div className="bg-[#0F0F12] border border-white/5 rounded-[3rem] p-12">
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-[3rem] p-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="space-y-3">
             <Zap className="w-8 h-8 text-amber-400" />
-            <h4 className="font-bold text-white">极速行情</h4>
-            <p className="text-xs text-slate-500">毫秒级智能体行为同步，抢占模拟先机。</p>
+            <h4 className="font-bold text-[var(--foreground)]">极速行情</h4>
+            <p className="text-xs text-[var(--muted-foreground)]">毫秒级智能体行为同步，抢占模拟先机。</p>
           </div>
           <div className="space-y-3">
             <Shield className="w-8 h-8 text-blue-400" />
-            <h4 className="font-bold text-white">安全保障</h4>
-            <p className="text-xs text-slate-500">多重加密保护您的策略隐私与数据安全。</p>
+            <h4 className="font-bold text-[var(--foreground)]">安全保障</h4>
+            <p className="text-xs text-[var(--muted-foreground)]">多重加密保护您的策略隐私与数据安全。</p>
           </div>
           <div className="space-y-3">
             <Cpu className="w-8 h-8 text-rose-400" />
-            <h4 className="font-bold text-white">AI 驱动</h4>
-            <p className="text-xs text-slate-500">基于 DRL 的智能体实验室，探索无限可能。</p>
+            <h4 className="font-bold text-[var(--foreground)]">AI 驱动</h4>
+            <p className="text-xs text-[var(--muted-foreground)]">基于 DRL 的智能体实验室，探索无限可能。</p>
           </div>
           <div className="space-y-3">
             <Headphones className="w-8 h-8 text-purple-400" />
-            <h4 className="font-bold text-white">专业支持</h4>
-            <p className="text-xs text-slate-500">7x24小时在线客服，解决您的任何疑问。</p>
+            <h4 className="font-bold text-[var(--foreground)]">专业支持</h4>
+            <p className="text-xs text-[var(--muted-foreground)]">7x24小时在线客服，解决您的任何疑问。</p>
           </div>
         </div>
       </div>

@@ -17,37 +17,38 @@ export default function Settings({ user, setUser }: SettingsProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-12">
       <header>
-        <h2 className="text-3xl font-bold text-white tracking-tight">设置</h2>
-        <p className="text-slate-500">配置您的模拟环境和账户信息</p>
+        <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight">设置</h2>
+        <p className="text-[var(--muted-foreground)]">配置您的模拟环境和账户信息</p>
       </header>
 
       <div className="grid grid-cols-1 gap-4">
         {sections.map((section) => (
           <button
             key={section.label}
-            className="bg-[#0F0F12] border border-white/5 rounded-3xl p-6 text-left flex items-center gap-6 hover:bg-white/[0.02] transition-colors group"
+            onClick={() => alert(`正在打开：${section.label}`)}
+            className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6 text-left flex items-center gap-6 hover:bg-[var(--muted)] transition-colors group"
           >
-            <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-rose-500/10 transition-colors">
-              <section.icon className="w-6 h-6 text-slate-400 group-hover:text-rose-400 transition-colors" />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--muted)] flex items-center justify-center group-hover:bg-rose-500/10 transition-colors">
+              <section.icon className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-rose-500 transition-colors" />
             </div>
             <div className="flex-1">
-              <h4 className="font-bold text-white">{section.label}</h4>
-              <p className="text-sm text-slate-500">{section.desc}</p>
+              <h4 className="font-bold text-[var(--foreground)]">{section.label}</h4>
+              <p className="text-sm text-[var(--muted-foreground)]">{section.desc}</p>
             </div>
-            <div className="px-4 py-2 rounded-xl bg-white/5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            <div className="px-4 py-2 rounded-xl bg-[var(--muted)] text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">
               配置
             </div>
           </button>
         ))}
       </div>
 
-      <div className="pt-8 border-t border-white/5">
+      <div className="pt-8 border-t border-[var(--border)]">
         <div className="bg-rose-500/5 border border-rose-500/10 rounded-[2rem] p-8 flex items-center justify-between">
           <div>
-            <h4 className="text-rose-400 font-bold mb-1 flex items-center gap-2">
+            <h4 className="text-rose-500 font-bold mb-1 flex items-center gap-2">
               <Trash2 className="w-4 h-4" /> 危险区域
             </h4>
-            <p className="text-sm text-slate-500">重置将清除所有交易历史和持仓数据。</p>
+            <p className="text-sm text-[var(--muted-foreground)]">重置将清除所有交易历史和持仓数据。</p>
           </div>
           <button 
             onClick={() => {

@@ -68,8 +68,8 @@ export default function Navbar({ user, theme, onToggleTheme }: NavbarProps) {
             <TrendingUp className="text-white w-5 h-5" />
           </div>
           <div className="hidden sm:block">
-            <h1 className="font-bold text-white tracking-tight leading-none">Simustock</h1>
-            <p className="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">Behavioral Finance</p>
+            <h1 className="font-bold text-[var(--foreground)] tracking-tight leading-none">Simustock</h1>
+            <p className="text-[9px] text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mt-0.5">Behavioral Finance</p>
           </div>
         </div>
 
@@ -93,6 +93,11 @@ export default function Navbar({ user, theme, onToggleTheme }: NavbarProps) {
 
         {/* Right: Theme Toggle + User Profile */}
         <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[var(--muted)] rounded-xl border border-[var(--border)]">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">Data Live</span>
+          </div>
+
           <button
             onClick={onToggleTheme}
             className="p-2 rounded-xl bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all"
